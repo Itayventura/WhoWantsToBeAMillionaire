@@ -1,9 +1,9 @@
 from flask import Flask
-#from SRC.database import Database
+from database import Database
 
 app = Flask(__name__)
 service_port = 40001
-#db = Database()
+db = Database()
 
 
 @app.route('/')
@@ -13,7 +13,7 @@ def index():
 
 @app.route('/sample-query')
 def run_sample_query():
-#    res = db.sample_query(4, 5)
+    res = db.sample_query(4, 5)
     return app.send_static_file('index.html')
 
 
