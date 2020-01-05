@@ -16,9 +16,11 @@ class DatabasePopulator:
                                            port=PORT)
         self.cursor = self.cnx.cursor()
 
-    def sample_population(self, values):
-        query = f'''INSERT INTO `test_table` (`test1`, `test2`, `test3`)
-         VALUES ('{values[0]}', '{values[1]}', '{values[2]}')'''
+    def insert_row(self, table_name, **kwargs):
+        values = ','.join(['\'' + col + '\'' for col in kwargs.values()])
+        query = f'''INSERT INTO `{table_name}`
+         VALUES ({values})'''
+        print("query: "+query)
         encoded_query = query.encode('utf-8')
         self.cursor.execute(encoded_query)
         self.cnx.commit()
