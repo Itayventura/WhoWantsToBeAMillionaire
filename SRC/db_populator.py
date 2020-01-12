@@ -17,15 +17,11 @@ class DatabasePopulator:
                                            port=PORT)
         self.cursor = self.cnx.cursor()
 
-    def insert_row(self, table_name, values, columns=""):
-        input_values = ', '.join(map(lambda x: "'%s'", values))
-        input_values = input_values % tuple(values)
-        sql_query = "INSERT INTO %s %s " \
-                    "VALUES (%s)"
-        sql_query = sql_query % (table_name, columns, input_values)
-        sql_query = sql_query.encode('utf-8')
+    def insert_row(self, table_name, values):
+        input_values = ', '.join(map(lambda x: "%s", values))
+        sql_query = f'INSERT INTO `%s` VALUES (%s)' % (table_name, input_values)
         try:
-            self.cursor.execute(sql_query)
+            self.cursor.execute(sql_query, tuple(values))
             self.cnx.commit()
         except Exception as ex:
             print(ex)
