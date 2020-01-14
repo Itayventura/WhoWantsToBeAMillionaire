@@ -1,20 +1,14 @@
 import mysql.connector
 
-USERNAME = 'DbMysql02'
-PASSWORD = 'neworder'
-# HOST = 'mysqlsrv1.cs.tau.ac.il'
-HOST = '127.0.0.1'
-PORT = 3305
-DATABASE = 'DbMysql02'
-
+from constants import *
 
 class DatabasePopulator:
     def __init__(self):
-        self.cnx = mysql.connector.connect(user=USERNAME,
-                                           password=PASSWORD,
-                                           host=HOST,
-                                           database=DATABASE,
-                                           port=PORT)
+        self.cnx = mysql.connector.connect(user=DB_USERNAME,
+                                           password=DB_PASSWORD,
+                                           host=DB_HOST,
+                                           database=DB_NAME,
+                                           port=DB_PORT)
         self.cursor = self.cnx.cursor()
 
     def insert_row(self, table_name, values):
