@@ -1,27 +1,32 @@
 import random
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request, session
 from database import Database
 from constants import *
 
 app = Flask(__name__)
 service_port = 40004
 db = Database()
+united_states = {}
 
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return app.send_static_file('index.html')
+    if (request.method == 'GET'):
+        data = artist_last_album()
+        return render_template('index.html', **data)
+    else:
+        data = artist_last_album()
+        print(data)
+        return jsonify(**data)
 
 
-def shuffle_answers(correct_answer, wrong_answers):
-    answers = [(ans, i) for i, ans in enumerate(wrong_answers, 1)] + [(correct_answer, 0)]
+def shuffle_answers(wrong_answers):
+    answers = [("answer_"+str(i), ans) for i, ans in enumerate(wrong_answers, 1)]
     print(answers)
     random.shuffle(answers)
     return dict(answers)
 
 
-@app.route('/artist_last_album')
 def artist_last_album():
     question = None
     correct_answer = None
@@ -37,10 +42,12 @@ def artist_last_album():
 
         question = QUESTION_LAST_ALBUM.format(artist=artist_name)
         wrong_answers = db.get_random_wrong_answers('album_name', ALBUMS, correct_answer)
-    answers = shuffle_answers(correct_answer, wrong_answers)
-    return render_template('index.html',
-                           question=question,
-                           answers=answers)
+    wrong_answers.append(correct_answer)
+    answers = shuffle_answers(wrong_answers)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    return answers
 
 
 if __name__ == "__main__":

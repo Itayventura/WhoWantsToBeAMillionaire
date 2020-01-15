@@ -1,32 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Our DBSM Project</title>
+    <meta charset='utf-8'>
+    <title>X-FACT - play!</title>
+    <link rel='stylesheet' type='text/css' media='screen' href="{{ url_for('static', filename='style.css') }}"">
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
 </head>
 <body>
-    <center>
-        {{question}}
-        <br/>
-        {% for answer, index in answers.items() %}
-            <button name="{{index}}" onclick="checkAnswer(this)">{{answer}}</button>
-        {% endfor %}
-        <br/>
-        <div id="result">Test</div>
-    </center>
+
+    <!--<nav>
+        <a href="play.html">X-FACT</a>
+        <a href="play.html">Play</a>
+        <a href="help.html">Help</a>
+    </nav> -->
+    <div class="game-container">
+        <div></div>
+        <div class="game-header">
+            <a class="logo" href="{{ url_for('index')}}"><span class="x-fact">The <strong>X-FACT</strong></span></a>
+            <a class="logo left" href="{{ url_for('index')}}"><span class="x-fact"><strong>MENU</strong></span></a>
+        </div>
+		<div id="seperator">
+			<span class="current number">1,000$</span>
+			<span class="number" id="seperator">4,000$</span>
+			<span class="number" id="seperator">16,000$</span>
+			<span class="number" id="seperator">64,000$</span>
+			<span class="number" id="seperator">256,000$</span>
+			<span class="number" id="seperator">1,000,000$</span>
+		</div>
+        <div class="timer-container">
+			<span id="friend">Friend</span>
+			<span id="timer">30</span>
+		</div>
+		<div id="seperator"></div>
+		
+		<div class="timer-container">
+			<span id="friend">50 : 50</span>
+		</div>
+		<div id="seperator"></div>
+		<div class="timer-container">
+			<span id="friend">Crowd</span>
+		</div>
+		<div id="seperator"></div>
+		<div id="seperator"></div>
+        
+        <div class="question-container">
+            <h5 id="question">{{ question }}</h5>
+        </div>
+        <div class="game-answers">
+            <span class="answer" id="answer-a" onclick="send_answer('answer_a', '{{ url_for('index') }}')">{{ answer_1 }}</span>
+            <span class="answer" id="answer-b" onclick="send_answer('answer_b', '{{ url_for('index') }}')">{{ answer_2 }}</span>
+        </div>
+        <div class="game-answers">
+            <span class="answer" id="answer-c" onclick="send_answer('answer_c', '{{ url_for('index') }}')">{{ answer_3 }}</span>
+            <span class="answer" id="answer-d" onclick="send_answer('answer_d', '{{ url_for('index') }}')">{{ answer_4 }}</span>
+        </div>
+
+    </div>
 </body>
-<script>
-        function checkAnswer(btn) {
-            var index = btn.name;
-            if (index == "0") {
-                document.getElementById('result').innerHTML = "Correct!";
-                document.getElementById('result').style.color = "green";
-            }
-            else {
-                document.getElementById('result').innerHTML = "Wrong!";
-                document.getElementById('result').style.color = "red";
-            }
-            return false;
-        }
-</script>
 </html>
