@@ -1,11 +1,11 @@
 import random
 
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from database import Database
 from constants import *
 
 app = Flask(__name__)
-service_port = 40001
+service_port = 40004
 db = Database()
 
 
@@ -44,4 +44,4 @@ def artist_last_album():
 
 
 if __name__ == "__main__":
-    app.run(port=service_port)
+    app.run(port=service_port, host="0.0.0.0")

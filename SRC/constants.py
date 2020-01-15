@@ -1,9 +1,9 @@
 """ database credentials """
 DB_USERNAME = 'DbMysql02'
 DB_PASSWORD = 'neworder'
-# DB_HOST = 'mysqlsrv1.cs.tau.ac.il'
-DB_HOST = '127.0.0.1'
-DB_PORT = 3305
+DB_HOST = 'mysqlsrv1.cs.tau.ac.il'
+#DB_HOST = '127.0.0.1'
+DB_PORT = 3306
 DB_NAME = 'DbMysql02'
 
 """ entities tables """
