@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Our DBSM Project</title>
+</head>
+<body>
+    <center>
+        {{question}}
+        <br/>
+        {% for answer, index in answers.items() %}
+            <button name="{{index}}" onclick="checkAnswer(this)">{{answer}}</button>
+        {% endfor %}
+        <br/>
+        <div id="result">Test</div>
+    </center>
+</body>
+<script>
+        function checkAnswer(btn) {
+            var index = btn.name;
+            if (index == "0") {
+                document.getElementById('result').innerHTML = "Correct!";
+                document.getElementById('result').style.color = "green";
+            }
+            else {
+                document.getElementById('result').innerHTML = "Wrong!";
+                document.getElementById('result').style.color = "red";
+            }
+            return false;
+        }
+</script>
+</html>
