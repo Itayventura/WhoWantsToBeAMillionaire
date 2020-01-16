@@ -47,12 +47,12 @@
             <h5 id="question">{{ question }}</h5>
         </div>
         <div class="game-answers">
-            <span class="answer" id="answer-a" onclick="send_answer('answer_a', '{{ url_for('index') }}')">{{ answer_1 }}</span>
-            <span class="answer" id="answer-b" onclick="send_answer('answer_b', '{{ url_for('index') }}')">{{ answer_2 }}</span>
+            <span class="answer" id="answer_a" onclick="send_answer('answer_a', '{{ url_for('index') }}')">A. {{ answer_a }}</span>
+            <span class="answer" id="answer_b" onclick="send_answer('answer_b', '{{ url_for('index') }}')">B. {{ answer_b }}</span>
         </div>
         <div class="game-answers">
-            <span class="answer" id="answer-c" onclick="send_answer('answer_c', '{{ url_for('index') }}')">{{ answer_3 }}</span>
-            <span class="answer" id="answer-d" onclick="send_answer('answer_d', '{{ url_for('index') }}')">{{ answer_4 }}</span>
+            <span class="answer" id="answer_c" onclick="send_answer('answer_c', '{{ url_for('index') }}')">C. {{ answer_c }}</span>
+            <span class="answer" id="answer_d" onclick="send_answer('answer_d', '{{ url_for('index') }}')">D. {{ answer_d }}</span>
         </div>
 
     </div>
