@@ -6,7 +6,7 @@ from constants import *
 
 app = Flask(__name__)
 app.secret_key = 't3mp_k3y'
-service_port = 40005
+service_port = 40004
 db = Database()
 
 @app.route('/', methods=['GET', 'POST'])
