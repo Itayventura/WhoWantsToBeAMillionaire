@@ -1,13 +1,16 @@
-window.onload = start_clock(30);
+var time_length = 30;
+document.addEventListener('DOMContentLoaded',start_clock, false);
 
-function start_clock(time_length)
+
+function start_clock()
 {
-    this.setInterval(check_clock, 1000);
+    window.setInterval(check_clock, 1000);
     
     function check_clock()
     {
         if (time_length == 0)
         {
+		location.reload(true);
             return end_game("Game_over! Time is out!");
         }
         var str = "";
@@ -37,8 +40,8 @@ function handle_response()
         if (dict.correct == "false")
         {
             document.getElementById(current_answer).style.backgroundColor = "red";
-            setTimeout(end_game, 300, "Sorry! Game over!");
-            setTimeout(refresh_question, 400);
+            setTimeout(end_game, 30, "Sorry! Game over!");
+            setTimeout(refresh_question, 300);
             return;
         }
         document.getElementById(current_answer).style.backgroundColor = "green";
@@ -46,10 +49,10 @@ function handle_response()
         {
             return end_game("Congradulations! you Won!");
         }
-        setTimeout(start_clock, 500, 30);
-        setTimeout(refresh_question, 490);
+        setTimeout(refresh_question, 300);
         function refresh_question()
         {
+            time_length = 30;
             document.getElementById(current_answer).style.boxShadow = "0 2px 7px 0 rgb(18, 19, 19)";
             document.getElementById(current_answer).style.backgroundColor = "rgb(87, 87, 182)";
             document.getElementById("question").innerHTML = dict.question;
