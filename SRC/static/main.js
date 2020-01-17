@@ -1,3 +1,4 @@
+
 var time_length = 30;
 document.addEventListener('DOMContentLoaded',start_clock, false);
 
@@ -10,7 +11,7 @@ function start_clock()
     {
         if (time_length == 0)
         {
-		location.reload(true);
+	    //location.reload(true);
             return end_game("Game_over! Time is out!");
         }
         var str = "";
@@ -53,8 +54,16 @@ function handle_response()
         function refresh_question()
         {
             time_length = 30;
-            document.getElementById(current_answer).style.boxShadow = "0 2px 7px 0 rgb(18, 19, 19)";
-            document.getElementById(current_answer).style.backgroundColor = "rgb(87, 87, 182)";
+            var x = document.getElementsByClassName("answer");
+            var i;
+            for (i = 0; i < x.length; i++)
+            {
+                //x[i].classList.add("refresh-button");
+                //x[i].classList.add("refresh-button:hover");
+		x[i].removeAttribute("style");
+            }
+            //document.getElementByClassName("answer").style.boxShadow = "0 2px 7px 0 rgb(18, 19, 19)";
+            //document.getElementByClassName("answer").style.backgroundColor = "rgb(87, 87, 182)";
             document.getElementById("question").innerHTML = dict.question;
             document.getElementById("answer_a").innerHTML = dict.answer_a;
             document.getElementById("answer_b").innerHTML = dict.answer_b;

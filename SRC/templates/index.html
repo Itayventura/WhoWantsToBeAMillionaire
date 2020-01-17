@@ -13,12 +13,14 @@
         <a href="play.html">Play</a>
         <a href="help.html">Help</a>
     </nav> -->
+    <center>
     <div class="game-container">
         <div></div>
         <div class="game-header">
             <a class="logo" href="{{ url_for('index')}}"><span class="x-fact">The <strong>X-FACT</strong></span></a>
             <a class="logo left" href="{{ url_for('index')}}"><span class="x-fact"><strong>MENU</strong></span></a>
         </div>
+	<div class="container-wrapper">
 		<div id="seperator">
 			<span class="current number">1,000$</span>
 			<span class="number" id="seperator">4,000$</span>
@@ -54,7 +56,8 @@
             <span class="answer" id="answer_c" onclick="send_answer('answer_c', '{{ url_for('index') }}')">C. {{ answer_c }}</span>
             <span class="answer" id="answer_d" onclick="send_answer('answer_d', '{{ url_for('index') }}')">D. {{ answer_d }}</span>
         </div>
-
+	</div><!--end of wrapper-->
     </div>
+    </center>
 </body>
 </html>

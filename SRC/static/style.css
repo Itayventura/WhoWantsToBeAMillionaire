@@ -82,7 +82,10 @@ div.game-container
 {
     background-color: rgb(162, 189, 240);
     border-radius: 2px;
-    margin: 10vh calc(18vw - 1px);
+    /*margin: 10vh calc(18vw - 1px);*/
+    /*margin-top: 2vh;*/
+    display: inline-block;
+    vertical-align: middle;
     height: auto;
     width: 64vw;
 	min-height: 600px;
@@ -141,6 +144,14 @@ span.answer:hover
 {
     box-shadow: none;
     /*background-color: rgb(64, 71, 71);*/
+}
+.refresh-answer
+{
+    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
+}
+.refresh-answer:hover
+{
+    box-shadow: none;
 }
 nav
 {
