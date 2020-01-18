@@ -12,11 +12,13 @@ db = Database()
 
 def generate_question(question_number):
     if question_number == 1:
-        return avg_tracks_for_artist_albums()
+        return movie_with_most_played_tracks_in_genre()
     elif question_number == 2:
-        return artist_last_album()
+        return avg_tracks_for_artist_albums()
     elif question_number == 3:
         return artist_with_more_albums_than_avg()
+    elif question_number == 4:
+        return artist_last_album()
     else:
         return artist_with_more_albums_than_avg()
 
@@ -100,6 +102,17 @@ def artist_with_more_albums_than_avg():
 def avg_tracks_for_artist_albums():
     correct_answer, wrong_answers, artist_name = db.get_avg_tracks_for_artist_albums()
     question = QUESTION_AVG_TRACKS_IN_ALBUM_FOR_ARTIST.format(artist=artist_name)
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+def movie_with_most_played_tracks_in_genre():
+    correct_answer, wrong_answers, genre_name = db.get_movie_with_most_played_tracks_in_genre()
+    question = QUESTION_MOVIE_WITH_MOST_PLAYED_TRACKS_IN_GENRE.format(genre=genre_name)
     answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
     answers['win'] = 'false'
     answers['correct'] = 'true'

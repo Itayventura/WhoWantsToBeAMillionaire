@@ -69,3 +69,11 @@ class Database:
             if random1 != avg_num and random1 not in random_nums:
                 random_nums.add(random1)
         return list(random_nums)
+
+    def get_movie_with_most_played_tracks_in_genre(self):
+        data = []
+        while len(data) == 0:
+            self.cursor.execute(sql_queries.get_movie_with_most_played_tracks_in_genre)
+            data = self.cursor.fetchall()
+        return data[0][0], [data[i][1] for i in range(len(data))], data[0][len(data) - 1]
+

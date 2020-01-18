@@ -120,3 +120,35 @@ FROM
      GROUP BY ArtistAlbums.album_id) AS tracks_count
 GROUP BY tracks_count.artist_name
 """
+
+get_movie_with_most_played_tracks_in_genre = """
+SELECT top_movie.movie_name,
+       Movies.movie_name,
+       top_movie.genre_name
+FROM
+    (SELECT Movies.movie_name,
+            Movies.movie_id,
+            rand_genre.genre_name
+     FROM
+         (SELECT genre_id AS genre_id,
+                 genre_name AS genre_name
+          FROM Genres
+          ORDER BY RAND()
+          LIMIT 1) AS rand_genre,
+          MovieTracks,
+          Tracks,
+          TracksGenres,
+          Movies
+     WHERE MovieTracks.track_id = Tracks.track_id
+         AND Tracks.track_id = TracksGenres.track_id
+         AND rand_genre.genre_id = TracksGenres.genre_id
+         AND Movies.movie_id = MovieTracks.movie_id
+     GROUP BY MovieTracks.movie_id,
+              rand_genre.genre_id
+     ORDER BY COUNT(MovieTracks.track_id) DESC
+     LIMIT 1) AS top_movie,
+     Movies
+WHERE Movies.movie_id != top_movie.movie_id
+ORDER BY RAND()
+LIMIT 3
+"""
