@@ -10,9 +10,6 @@ from constants import *
 
 dbp = DatabasePopulator()
 
-album_ids = set([])
-artist_ids = set([])
-
 
 def str_to_uid(text):
     m = hashlib.md5()
@@ -33,10 +30,11 @@ def http_request(method='GET', url=None, headers=None, params=None):
 def collect_genres():
     params = {'apikey': MUSIXMATCH_API_KEY}
     json_data = http_request(url=MUSIXMATCH_URL + "/music.genres.get", params=params)
-    if json_data:
-        for entry in json_data['message']['body']['music_genre_list']:
-            genre_id = entry['music_genre']['music_genre_id']
-            genre_name = entry['music_genre']['music_genre_name']
+    if json_data and json_data.get('message', {}).get('body', {}):
+        for entry in json_data.get('message', {}).get('body', {}).get('music_genre_list', []):
+            genre_id = entry.get('music_genre', {}).get('music_genre_id')
+            genre_name = entry.get('music_genre', {}).get('music_genre_name')
+            # print(str((GENRES, [genre_id, genre_name])))
             dbp.insert_row(GENRES, [genre_id, genre_name])
 
 
@@ -80,7 +78,7 @@ def get_track_lyrics(track_name, artist_name):
     return None
 
 
-def get_track_movies(track_name, artist_name):
+def get_track_movies(track_id, track_name, artist_name):
     response = requests.request("GET", TUNEFIND_URL + f'/artist/{artist_name}')
     if response.status_code <= 299:
         html = BeautifulSoup(response.text, 'html.parser')
@@ -103,104 +101,128 @@ def get_track_movies(track_name, artist_name):
 
             # print(str(movie_name_list))
             for movie_uid, movie_name in zip(movie_uid_list, movie_name_list):
+                # print(str((MOVIES, [movie_uid, movie_name])))
                 dbp.insert_row(MOVIES, [movie_uid, movie_name])
-            return movie_uid_list
+                # print(str((MOVIE_TRACKS, [track_id, movie_uid])))
+                dbp.insert_row(MOVIE_TRACKS, [track_id, movie_uid])
+
+
+def get_track_genres(track_data):
+    track_genre_list = track_data.get('primary_genres', {}).get('music_genre_list', [])
+    for elem in track_genre_list:
+        genre_id = elem['music_genre']['music_genre_id']
+        values = [track_data['track_id'], genre_id]
+        # print(str((TRACKS_GENRES, values)))
+        dbp.insert_row(TRACKS_GENRES, values)
+
+
+def add_track_entry(track_data, album_id, artist_id):
+    track_id = track_data.get('track_id', '')
+    track_name = track_data.get('track_name', '')
+    track_rating = track_data.get('track_rating', -1)
+    artist_name = track_data.get('artist_name', '')
+    track_lyrics = get_track_lyrics(track_name, artist_name)
+    values = [track_id, track_name, track_rating, artist_id, album_id, track_lyrics]
+    # print(str((TRACKS, values)))
+    dbp.insert_row(TRACKS, values)
+    # print(str((ALBUM_TRACKS, [track_id, album_id])))
+    dbp.insert_row(ALBUM_TRACKS, [track_id, album_id])
+    # print(str((ARTIST_TRACKS, [track_id, artist_id])))
+    dbp.insert_row(ARTIST_TRACKS, [track_id, artist_id])
+    get_track_movies(track_id, track_name, artist_name)
+    get_track_genres(track_data)
+
+
+def add_album_tracks(album_id, artist_id):
+    params = {
+        'album_id': album_id,
+        'page_size': 15,  # TODO: change to 100
+        'apikey': MUSIXMATCH_API_KEY
+    }
+    tracks_response = http_request(url=MUSIXMATCH_URL + "/album.tracks.get", params=params)
+    if tracks_response:
+        response_body = tracks_response.get('message', {}).get('body', {})
+        if response_body and response_body.get('track_list'):
+            for track in response_body['track_list']:
+                track = track['track']
+                add_track_entry(track, album_id, artist_id)
+
+
+def add_album_entry(album_data, artist_id):
+    album_id = album_data.get('album_id', '')
+    album_name = album_data.get('album_name', '')
+    release_date = parse_date(album_data.get('album_release_date', '0000'))
+    release_type = album_data.get('album_release_type', 'Album')
+    # enter the album entry to the ALBUMS table
+    values = [album_id, album_name, release_date, release_type]
+    # print(str((ALBUMS, values)))
+    dbp.insert_row(ALBUMS, values)
+    # print(str((ARTIST_ALBUMS, [album_id, artist_id])))
+    dbp.insert_row(ARTIST_ALBUMS, [album_id, artist_id])
+    add_album_tracks(album_id, artist_id)
+
+
+def add_artist_entry(artist_data, artist_id):
+    artist_name = artist_data.get('name', '')
+    artist_type = artist_data.get('type', '')
+    artist_rating = artist_data.get('score', -1)
+    artist_country = artist_data.get('area', {}).get('name', '')
+    birth = parse_date(artist_data.get('life-span', {}).get('begin', '0000'))
+    death = parse_date(artist_data.get('life-span', {}).get('end', '0000'))
+    values = [artist_id, artist_name, artist_type, artist_rating,
+              artist_country, birth, death]
+    # print(str((ARTISTS, values)))
+    dbp.insert_row(ARTISTS, values)
+
+
+def add_all_artist_albums(musixmatch_artist_id):
+    params = {
+        'artist_id': musixmatch_artist_id,
+        'g_album_name': 1,
+        'page_size': 7,  # TODO: change to 100
+        'apikey': MUSIXMATCH_API_KEY
+    }
+    albums_response = http_request(url=MUSIXMATCH_URL + "/artist.albums.get", params=params)
+    if albums_response:
+        response_body = albums_response.get('message', {}).get('body', {})
+        if response_body and response_body.get('album_list'):
+            for album in albums_response['message']['body']['album_list']:
+                album = album['album']
+                add_album_entry(album, musixmatch_artist_id)
+
+
+def get_musixmatch_artist_id(artist):
+    params = {
+        'q_artist': artist.get('name', ''),
+        'apikey': MUSIXMATCH_API_KEY
+    }
+    musixmatch_artist_response = http_request(url=MUSIXMATCH_URL + "/artist.search", params=params)
+    if musixmatch_artist_response:
+        response_body = musixmatch_artist_response.get('message', {}).get('body', {})
+        if response_body and response_body.get('artist_list'):
+            return response_body['artist_list'][0]['artist']['artist_id']
     return None
 
 
-def add_album_entry(album_id, artist_id):
-    if album_id not in album_ids:
-        album_ids.add(album_id)
-        params = {'album_id': album_id, 'apikey': MUSIXMATCH_API_KEY}
-        json_data = http_request(url=MUSIXMATCH_URL + "/album.get", params=params)
-        if json_data and json_data.get('message', {}).get('body', {}).get('album'):
-            album_data = json_data['message']['body']['album']
-            album_name = album_data.get('album_name', '')
-            release_date = parse_date(album_data.get('album_release_date', '0000'))
-            release_type = album_data.get('album_release_type', 'Album')
-            # enter the album entry to the ALBUMS table
-            values = [album_id, album_name, release_date, release_type]
-            # print(str(values))
-            dbp.insert_row(ALBUMS, values)
-            dbp.insert_row(ARTIST_ALBUMS, [album_id, artist_id])
-
-
-def add_artist_entry(artist_id):
-    if artist_id not in artist_ids:
-        artist_ids.add(artist_id)
-        params = {'query': f'arid:{artist_id}',
-                  'fmt': 'json'}
-        musicbrainz_data = http_request(url=MUSICBRAINZ_URL + "/artist", params=params)
-        if musicbrainz_data and musicbrainz_data['count'] == 1:
-            # print("artist_data_exists_in_musixbrainz")
-            artist_data = musicbrainz_data['artists'][0]
-            artist_name = artist_data.get('name', '')
-            artist_type = artist_data.get('type', '')
-            artist_rating = artist_data.get('score', -1)
-            artist_country = artist_data.get('area', {}).get('name', '')
-            birth = parse_date(artist_data.get('life-span', {}).get('begin', '0000'))
-            death = parse_date(artist_data.get('life-span', {}).get('end', '0000'))
-            values = [artist_id, artist_name, artist_type, artist_rating,
-                      artist_country, birth, death]
-            # print(str(values))
-            dbp.insert_row(ARTISTS, values)
-
-
-def get_top_tracks(page, page_size, chart_name):
-    params = {
-        'apikey': MUSIXMATCH_API_KEY,
-        'page': page, 'page_size': page_size, 'chart_name': chart_name
-    }
-    json_data = http_request(url=MUSIXMATCH_URL + "/chart.tracks.get", params=params)
-    if json_data:
-        track_list = json_data['message']['body']['track_list']
-        for track in track_list:
-            musix_match_track = track['track']
-            track_id = musix_match_track['track_id']
-            track_name = musix_match_track['track_name']
-            artist_name = musix_match_track['artist_name']
-
-            params = {
-                'query': f'\"{track_name}\" AND artist:\"{artist_name}\"',
-                'fmt': 'json'
-            }
-            response = http_request(url=MUSICBRAINZ_URL + "/recording", params=params)
-            if response and response['recordings']:
-                music_brainz_track = response['recordings'][0]
-                artist_id = music_brainz_track.get('artist-credit', [{}])[0].get('artist', {}).get('id')
-                add_artist_entry(artist_id)
-
-                album_id = musix_match_track.get('album_id')
-                add_album_entry(album_id, artist_id)
-
-                track_rating = music_brainz_track.get('score', -1)
-                track_lyrics = get_track_lyrics(track_name, artist_name)
-                track_movies = get_track_movies(track_name, artist_name)
-
-                values = [track_id, track_name, track_rating, artist_id, album_id, track_lyrics]
-                # print(str(values))
-                dbp.insert_row(TRACKS, values)
-
-                # print(str([track_id, artist_id]))
-                dbp.insert_row(ARTIST_TRACKS, [track_id, artist_id])
-
-                # print(str([track_id, album_id]))
-                dbp.insert_row(ALBUM_TRACKS, [track_id, album_id])
-
-                if track_movies:
-                    for movie_uid in track_movies:
-                        dbp.insert_row(MOVIE_TRACKS, [track_id, movie_uid])
-
-                track_genre_list = musix_match_track.get('primary_genres', {}).get('music_genre_list', [])
-                for elem in track_genre_list:
-                    genre_id = elem['music_genre']['music_genre_id']
-                    values = [track_id, genre_id]
-                    # print(str(values))
-                    dbp.insert_row(TRACKS_GENRES, values)
+def get_artists(limit, offset):
+    for artist_type in ['person', 'group']:
+        params = {
+            'query': f'type:\"{artist_type}\"',
+            'limit': limit,
+            'offset': offset,
+            'fmt': 'json'
+        }
+        response = http_request(url=MUSICBRAINZ_URL + "/artist", params=params)
+        if response and response['artists']:
+            for artist in response['artists']:
+                artist_id = get_musixmatch_artist_id(artist)
+                if artist_id:
+                    add_artist_entry(artist, artist_id)
+                    add_all_artist_albums(artist_id)
 
 
 # collect_genres()
 
-for i in range(1, 10):
-    get_top_tracks(page=i, page_size=100, chart_name="hot")
+for i in range(3, 1000):
+    get_artists(limit=100, offset=i*100)
 print("success")

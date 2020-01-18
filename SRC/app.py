@@ -1,6 +1,6 @@
 import random
 
-from flask import Flask, render_template, jsonify, request, session
+from flask import Flask, render_template, jsonify, request, session, redirect
 from database import Database
 from constants import *
 
@@ -10,19 +10,30 @@ service_port = 40004
 db = Database()
 
 
+def generate_question(question_number):
+    if question_number == 1:
+        return artist_with_more_albums_than_avg()
+    elif question_number == 2:
+        return artist_last_album()
+    else:
+        return artist_with_more_albums_than_avg()
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
         session['number'] = 0
+        session['question_number'] = 1
         session['target'] = 70
-        data, session['correct'] = artist_with_more_albums_than_avg()
+        data, session['correct'] = generate_question(session['question_number'])
         # print(session['correct'])
         return render_template('index.html', **data)
     else:
         req_data = request.get_data().decode('utf-8')
         # print(req_data)
         last_correct = session['correct']
-        data, session['correct'] = artist_with_more_albums_than_avg()
+        session['question_number'] += 1
+        data, session['correct'] = generate_question(session['question_number'])
         data['correct'] = 'false'
         data['win'] = 'false'
         # print(last_correct)
