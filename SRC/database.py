@@ -1,5 +1,6 @@
 import mysql.connector
 import sql_queries
+import random
 import json
 
 from constants import *
@@ -50,3 +51,21 @@ class Database:
         data = self.cursor.fetchall()
         # return: correct_answer, [wrong_answers]
         return data[0][0], [data[i][0] for i in range(1, len(data))]
+
+    def get_avg_tracks_for_artist_albums(self):
+        avg_track_in_album = 0
+        while not avg_track_in_album:
+            self.cursor.execute(sql_queries.get_avg_tracks_for_artist_albums)
+            data = self.cursor.fetchall()
+            avg_track_in_album = data[0][0]
+        avg_track_in_album = round(avg_track_in_album, 2)
+        # return: avg(tracks_count_in_album), 3 wrong answers, artist_name
+        return avg_track_in_album, self.generate_3_random_numbers(avg_track_in_album), data[0][1]
+
+    def generate_3_random_numbers(self, avg_num):
+        random_nums = set([])
+        while len(random_nums) < 3:
+            random1 = round(random.uniform(4.0, 20.0), 2)
+            if random1 != avg_num and random1 not in random_nums:
+                random_nums.add(random1)
+        return list(random_nums)

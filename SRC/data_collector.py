@@ -136,7 +136,7 @@ def add_track_entry(track_data, album_id, artist_id):
 def add_album_tracks(album_id, artist_id):
     params = {
         'album_id': album_id,
-        'page_size': 15,  # TODO: change to 100
+        'page_size': 4,  # TODO: change to 100
         'apikey': MUSIXMATCH_API_KEY
     }
     tracks_response = http_request(url=MUSIXMATCH_URL + "/album.tracks.get", params=params)
@@ -179,7 +179,7 @@ def add_all_artist_albums(musixmatch_artist_id):
     params = {
         'artist_id': musixmatch_artist_id,
         'g_album_name': 1,
-        'page_size': 7,  # TODO: change to 100
+        'page_size': 4,  # TODO: change to 100
         'apikey': MUSIXMATCH_API_KEY
     }
     albums_response = http_request(url=MUSIXMATCH_URL + "/artist.albums.get", params=params)
@@ -206,23 +206,24 @@ def get_musixmatch_artist_id(artist):
 
 def get_artists(limit, offset):
     for artist_type in ['person', 'group']:
-        params = {
-            'query': f'type:\"{artist_type}\"',
-            'limit': limit,
-            'offset': offset,
-            'fmt': 'json'
-        }
-        response = http_request(url=MUSICBRAINZ_URL + "/artist", params=params)
-        if response and response['artists']:
-            for artist in response['artists']:
-                artist_id = get_musixmatch_artist_id(artist)
-                if artist_id:
-                    add_artist_entry(artist, artist_id)
-                    add_all_artist_albums(artist_id)
+        for country in ['US', 'UK']:
+            params = {
+                'query': f'type:\"{artist_type}\" AND country:\"{country}\"',
+                'limit': limit,
+                'offset': offset,
+                'fmt': 'json'
+            }
+            response = http_request(url=MUSICBRAINZ_URL + "/artist", params=params)
+            if response and response['artists']:
+                for artist in response['artists']:
+                    artist_id = get_musixmatch_artist_id(artist)
+                    if artist_id:
+                        add_artist_entry(artist, artist_id)
+                        add_all_artist_albums(artist_id)
 
 
 # collect_genres()
 
-for i in range(3, 1000):
+for i in range(5, 1000):
     get_artists(limit=100, offset=i*100)
 print("success")

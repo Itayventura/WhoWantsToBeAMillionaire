@@ -12,9 +12,11 @@ db = Database()
 
 def generate_question(question_number):
     if question_number == 1:
-        return artist_with_more_albums_than_avg()
+        return avg_tracks_for_artist_albums()
     elif question_number == 2:
         return artist_last_album()
+    elif question_number == 3:
+        return artist_with_more_albums_than_avg()
     else:
         return artist_with_more_albums_than_avg()
 
@@ -32,7 +34,10 @@ def index():
         req_data = request.get_data().decode('utf-8')
         # print(req_data)
         last_correct = session['correct']
+        print(session['question_number'])
         session['question_number'] += 1
+        print(session['question_number'])
+        print()
         data, session['correct'] = generate_question(session['question_number'])
         data['correct'] = 'false'
         data['win'] = 'false'
@@ -83,6 +88,18 @@ def artist_last_album():
 def artist_with_more_albums_than_avg():
     question = QUESTION_ARTIST_WITH_MORE_ALBUMS_THAN_AVG
     correct_answer, wrong_answers = db.get_artist_with_more_albums_than_avg()
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+
+def avg_tracks_for_artist_albums():
+    correct_answer, wrong_answers, artist_name = db.get_avg_tracks_for_artist_albums()
+    question = QUESTION_AVG_TRACKS_IN_ALBUM_FOR_ARTIST.format(artist=artist_name)
     answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
     answers['win'] = 'false'
     answers['correct'] = 'true'

@@ -100,3 +100,23 @@ UNION
      ORDER BY RAND()
      LIMIT 3)
 """
+
+get_avg_tracks_for_artist_albums = """
+SELECT AVG(tracks_count.num),
+       tracks_count.artist_name
+FROM
+    (SELECT COUNT(AlbumTracks.track_id) AS num,
+            rand_artist.artist_name AS artist_name
+     FROM
+         (SELECT artist_id,
+                 artist_name
+          FROM Artists
+          ORDER BY RAND()
+          LIMIT 1) AS rand_artist,
+          ArtistAlbums,
+          AlbumTracks
+     WHERE ArtistAlbums.album_id = AlbumTracks.album_id
+         AND rand_artist.artist_id = ArtistAlbums.artist_id
+     GROUP BY ArtistAlbums.album_id) AS tracks_count
+GROUP BY tracks_count.artist_name
+"""
