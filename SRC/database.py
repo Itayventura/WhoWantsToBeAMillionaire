@@ -45,3 +45,8 @@ class Database:
         data = self.organized_results()
         return [row[attribute_name] for row in data]
 
+    def get_artist_with_more_albums_than_avg(self):
+        self.cursor.execute(sql_queries.get_artist_with_more_albums_than_avg)
+        data = self.cursor.fetchall()
+        # return: correct_answer, [wrong_answers]
+        return data[0][0], [data[i][0] for i in range(1, len(data))]

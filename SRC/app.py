@@ -9,30 +9,31 @@ app.secret_key = 't3mp_k3y'
 service_port = 40004
 db = Database()
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if (request.method == 'GET'):
+    if request.method == 'GET':
         session['number'] = 0
         session['target'] = 70
-        data, session['correct'] = artist_last_album()
-        #print(session['correct'])
+        data, session['correct'] = artist_with_more_albums_than_avg()
+        # print(session['correct'])
         return render_template('index.html', **data)
     else:
         req_data = request.get_data().decode('utf-8')
-        #print(req_data)
+        # print(req_data)
         last_correct = session['correct']
-        data, session['correct'] = artist_last_album()
+        data, session['correct'] = artist_with_more_albums_than_avg()
         data['correct'] = 'false'
         data['win'] = 'false'
-        #print(last_correct)
-        #print(req_data)
-        if (last_correct == req_data):
+        # print(last_correct)
+        # print(req_data)
+        if last_correct == req_data:
             data['correct'] = 'true'
             session['number'] += 1
-            if (session['number'] == session['target']):
+            if session['number'] == session['target']:
                 data['win'] = 'true'
             return jsonify(**data)
-        #print(data)
+        # print(data)
         return jsonify(**data)
 
 
@@ -63,8 +64,20 @@ def artist_last_album():
     answers['win'] = 'false'
     answers['correct'] = 'true'
     answers['question'] = question
-    #print("answer:")
-    #print(answers)
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+
+def artist_with_more_albums_than_avg():
+    question = QUESTION_ARTIST_WITH_MORE_ALBUMS_THAN_AVG
+    correct_answer, wrong_answers = db.get_artist_with_more_albums_than_avg()
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
     return answers, correct_answer_number
 
 

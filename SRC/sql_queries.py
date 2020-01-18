@@ -23,8 +23,80 @@ WHERE Albums.album_id = ArtistAlbums.album_id
 	                                AND AA.artist_id = Artists.artist_id)
 """
 
+get_artist_albums = """
+(SELECT albums.album_name 
+ FROM   albums, 
+        artists, 
+        artistalbums 
+ WHERE  albums.album_id = artistalbums.album_id 
+        AND artistalbums.artist_id = artists.artist_id 
+        AND artists.artist_id = '%s' 
+        AND albums.release_date >= ALL (SELECT AL.release_date 
+                                        FROM   albums AS AL, 
+                                               artistalbums AS AA 
+                                        WHERE  AL.album_id = AA.album_id 
+                                               AND AA.artist_id = 
+                                                   artists.artist_id)) 
+UNION 
+(SELECT albums.album_name 
+ FROM   albums, 
+        artists, 
+        artistalbums 
+ WHERE  albums.album_id = artistalbums.album_id 
+        AND artistalbums.artist_id = artists.artist_id 
+        AND artists.artist_id = '%s' 
+        AND albums.release_date < (SELECT albums.release_date 
+                                   FROM   albums, 
+                                          artists, 
+                                          artistalbums 
+                                   WHERE  albums.album_id = 
+                                          artistalbums.album_id 
+                                          AND artistalbums.artist_id = 
+                                              artists.artist_id 
+                                          AND 
+                artists.artist_id = '%s' 
+                                          AND albums.release_date >= ALL 
+                                              (SELECT AL.release_date 
+                                               FROM   albums AS AL, 
+                                                      artistalbums AS AA 
+                                               WHERE  AL.album_id = AA.album_id 
+                                                      AND AA.artist_id = 
+                                                          artists.artist_id)) 
+ LIMIT  3) 
+ """
+
 get_random_wrong_answers = """
 SELECT `%s` FROM `%s`
 WHERE %s != "%s"
 LIMIT 3
+"""
+
+get_artist_with_more_albums_than_avg = """
+(SELECT Artists.artist_name
+     FROM Artists,
+          ArtistAlbums
+     WHERE ArtistAlbums.artist_id = Artists.artist_id
+     GROUP BY Artists.artist_id
+     HAVING COUNT(DISTINCT ArtistAlbums.album_id) >
+         (SELECT AVG(nested.`count`)
+          FROM
+              (SELECT COUNT(DISTINCT album_id) AS `count`
+               FROM ArtistAlbums
+               GROUP BY artist_id) AS nested)
+     ORDER BY RAND()
+     LIMIT 1)
+UNION
+    (SELECT Artists.artist_name
+     FROM Artists,
+          ArtistAlbums
+     WHERE ArtistAlbums.artist_id = Artists.artist_id
+     GROUP BY Artists.artist_id
+     HAVING COUNT(DISTINCT ArtistAlbums.album_id) <=
+         (SELECT AVG(nested.`count`)
+          FROM
+              (SELECT COUNT(DISTINCT album_id) AS `count`
+               FROM ArtistAlbums
+               GROUP BY artist_id) AS nested)
+     ORDER BY RAND()
+     LIMIT 3)
 """

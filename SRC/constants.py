@@ -32,3 +32,4 @@ TUNEFIND_URL = 'https://www.tunefind.com'
 
 """ QUESTIONS """
 QUESTION_LAST_ALBUM = 'What is {artist}\'s last album?'
+QUESTION_ARTIST_WITH_MORE_ALBUMS_THAN_AVG = 'Which artist has more albums than the average?'
