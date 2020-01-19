@@ -134,3 +134,41 @@ UNION
      ORDER BY RAND()
      LIMIT 3)
 """
+
+get_artist_with_album_released_in_specific_decade_with_love_song = """
+    (SELECT Artists.artist_name
+     FROM Artists
+     WHERE artist_id = ANY
+             (SELECT ArtistAlbums.artist_id
+              FROM ArtistAlbums,
+                   Albums
+              WHERE ArtistAlbums.album_id = Albums.album_id
+                  AND Albums.release_date >= %s
+                  AND Albums.release_date < %s
+                  AND Albums.album_id = ANY
+                      (SELECT AlbumTracks.album_id
+                       FROM AlbumTracks,
+                            Tracks
+                       WHERE AlbumTracks.track_id = Tracks.track_id
+                           AND Tracks.lyrics LIKE '%love%'))
+     ORDER BY RAND()
+     LIMIT 1)
+UNION
+    (SELECT Artists.artist_name
+     FROM Artists
+     WHERE artist_id = ANY
+             (SELECT ArtistAlbums.artist_id
+              FROM ArtistAlbums,
+                   Albums
+              WHERE ArtistAlbums.album_id = Albums.album_id
+                  AND Albums.release_date >= %s
+                  AND Albums.release_date < %s
+                  AND Albums.album_id != ANY
+                      (SELECT AlbumTracks.album_id
+                       FROM AlbumTracks,
+                            Tracks
+                       WHERE AlbumTracks.track_id = Tracks.track_id
+                           AND Tracks.lyrics LIKE '%love%'))
+     ORDER BY RAND()
+     LIMIT 3)
+"""

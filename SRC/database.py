@@ -1,6 +1,7 @@
 import mysql.connector
 import sql_queries
 import random
+from datetime import datetime
 import json
 
 from constants import *
@@ -36,8 +37,10 @@ class Database:
         while not avg_track_in_album:
             self.cursor.execute(sql_queries.get_avg_tracks_for_artist_albums)
             data = self.cursor.fetchall()
+            if not data:
+                continue
             avg_track_in_album = data[0][0]
-        avg_track_in_album = round(avg_track_in_album, 2)
+        avg_track_in_album = round(float(avg_track_in_album), 2)
         # return: avg(tracks_count_in_album), 3 wrong answers, artist_name
         return avg_track_in_album, self.generate_3_random_numbers(avg_track_in_album), data[0][1]
 
@@ -71,3 +74,15 @@ class Database:
         data = self.cursor.fetchall()
         # return genre_id, genre_name
         return data[0][0], data[0][1]
+
+    def get_artist_with_album_released_in_specific_decade_with_love_song(self):
+        decades = [year for year in range(1950, 2010, 10)]
+        data = []
+        while len(data) < 4:
+            random.shuffle(decades)
+            decade_start = datetime(decades[0], 1, 1)
+            decade_end = datetime(decades[0] + 10, 1, 1)
+            self.cursor.execute(sql_queries.get_artist_with_album_released_in_specific_decade_with_love_song, (decade_start, decade_end, decade_start, decade_end))
+            data = self.cursor.fetchall()
+        # return correct answer, [wrong answers], decade
+        return data[0][0], [data[i][0] for i in range(1, len(data))], decades[0]
