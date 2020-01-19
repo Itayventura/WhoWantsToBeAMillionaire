@@ -25,27 +25,6 @@ class Database:
             ret.append(dict(zip(field_names, row)))
         return ret
 
-    def get_random_row(self, table_name):
-        self.cursor.execute(sql_queries.get_random_row % table_name)
-        return self.organized_results()
-
-    def get_artist_name(self, artist_id):
-        self.cursor.execute(sql_queries.get_artist_name % artist_id)
-        return self.organized_results()
-
-    def get_artist_last_album(self, artist_id):
-        self.cursor.execute(sql_queries.get_artist_last_album % artist_id)
-        data = self.organized_results()
-        if data:
-            return data.get('album_name')
-        return None
-
-    def get_random_wrong_answers(self, attribute_name, table_name, unwanted_value):
-        self.cursor.execute(sql_queries.get_random_wrong_answers % (attribute_name, table_name,
-                                                                    attribute_name, unwanted_value))
-        data = self.organized_results()
-        return [row[attribute_name] for row in data]
-
     def get_artist_with_more_albums_than_avg(self):
         self.cursor.execute(sql_queries.get_artist_with_more_albums_than_avg)
         data = self.cursor.fetchall()
@@ -75,5 +54,20 @@ class Database:
         while len(data) == 0:
             self.cursor.execute(sql_queries.get_movie_with_most_played_tracks_in_genre)
             data = self.cursor.fetchall()
+        # return correct answer, [wrong answers], genre_name
         return data[0][0], [data[i][1] for i in range(len(data))], data[0][len(data) - 1]
 
+    def get_artist_with_mainly_tracks_from_specific_genre(self):
+        data = []
+        while len(data) < 4:
+            genre_id, genre_name = self.generate_random_genre()
+            self.cursor.execute(sql_queries.get_artist_with_mainly_tracks_from_specific_genre % (genre_id, genre_id))
+            data = self.cursor.fetchall()
+        # return correct answer, [wrong answers], genre_name
+        return data[0][0], [data[i][0] for i in range(1, len(data))], genre_name
+
+    def generate_random_genre(self):
+        self.cursor.execute(sql_queries.get_random_genre)
+        data = self.cursor.fetchall()
+        # return genre_id, genre_name
+        return data[0][0], data[0][1]

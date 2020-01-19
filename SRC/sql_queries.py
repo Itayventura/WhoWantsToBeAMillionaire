@@ -1,76 +1,3 @@
-get_random_row = """
-SELECT * FROM `%s`
-ORDER BY RAND()
-LIMIT 1
-"""
-
-
-get_artist_name_by_id = """
-SELECT artist_name
-FROM Artists
-WHERE artist_id = %s
-"""
-
-get_artist_last_album = """
-SELECT Albums.album_name
-FROM Albums, Artists, ArtistAlbums
-WHERE Albums.album_id = ArtistAlbums.album_id
-    AND ArtistAlbums.artist_id = Artists.artist_id
-	AND Artists.artist_id = '%s'
-	AND Albums.release_date >= ALL (SELECT AL.release_date
-	                                FROM Albums AS AL, ArtistAlbums AS AA
-	                                WHERE AL.album_id = AA.album_id
-	                                AND AA.artist_id = Artists.artist_id)
-"""
-
-get_artist_albums = """
-(SELECT albums.album_name 
- FROM   albums, 
-        artists, 
-        artistalbums 
- WHERE  albums.album_id = artistalbums.album_id 
-        AND artistalbums.artist_id = artists.artist_id 
-        AND artists.artist_id = '%s' 
-        AND albums.release_date >= ALL (SELECT AL.release_date 
-                                        FROM   albums AS AL, 
-                                               artistalbums AS AA 
-                                        WHERE  AL.album_id = AA.album_id 
-                                               AND AA.artist_id = 
-                                                   artists.artist_id)) 
-UNION 
-(SELECT albums.album_name 
- FROM   albums, 
-        artists, 
-        artistalbums 
- WHERE  albums.album_id = artistalbums.album_id 
-        AND artistalbums.artist_id = artists.artist_id 
-        AND artists.artist_id = '%s' 
-        AND albums.release_date < (SELECT albums.release_date 
-                                   FROM   albums, 
-                                          artists, 
-                                          artistalbums 
-                                   WHERE  albums.album_id = 
-                                          artistalbums.album_id 
-                                          AND artistalbums.artist_id = 
-                                              artists.artist_id 
-                                          AND 
-                artists.artist_id = '%s' 
-                                          AND albums.release_date >= ALL 
-                                              (SELECT AL.release_date 
-                                               FROM   albums AS AL, 
-                                                      artistalbums AS AA 
-                                               WHERE  AL.album_id = AA.album_id 
-                                                      AND AA.artist_id = 
-                                                          artists.artist_id)) 
- LIMIT  3) 
- """
-
-get_random_wrong_answers = """
-SELECT `%s` FROM `%s`
-WHERE %s != "%s"
-LIMIT 3
-"""
-
 get_artist_with_more_albums_than_avg = """
 (SELECT Artists.artist_name
      FROM Artists,
@@ -151,4 +78,59 @@ FROM
 WHERE Movies.movie_id != top_movie.movie_id
 ORDER BY RAND()
 LIMIT 3
+"""
+
+get_random_genre = """
+SELECT * 
+FROM Genres 
+ORDER BY RAND() 
+LIMIT 1
+"""
+
+get_artist_with_mainly_tracks_from_specific_genre = """
+    (SELECT artist_name
+     FROM Artists
+     WHERE EXISTS
+             (SELECT DISTINCT 1
+              FROM
+                  (SELECT ArtistTracks.artist_id,
+                          COUNT(ArtistTracks.track_id) AS num
+                   FROM TracksGenres,
+                        ArtistTracks
+                   WHERE ArtistTracks.track_id = TracksGenres.track_id
+                       AND TracksGenres.genre_id = '%s'
+                   GROUP BY ArtistTracks.artist_id) AS total_pop_count_for_artist,
+
+                  (SELECT ArtistTracks.artist_id,
+                          COUNT(ArtistTracks.track_id) AS num
+                   FROM ArtistTracks
+                   GROUP BY ArtistTracks.artist_id) AS total_tracks_count_for_artist
+              WHERE Artists.artist_id = total_pop_count_for_artist.artist_id
+                  AND total_pop_count_for_artist.artist_id = total_tracks_count_for_artist.artist_id
+                  AND total_pop_count_for_artist.num > 0.5 * total_tracks_count_for_artist.num)
+     ORDER BY RAND()
+     LIMIT 1)
+UNION
+    (SELECT artist_name
+     FROM Artists
+     WHERE NOT EXISTS
+             (SELECT DISTINCT 1
+              FROM
+                  (SELECT ArtistTracks.artist_id,
+                          COUNT(ArtistTracks.track_id) AS num
+                   FROM TracksGenres,
+                        ArtistTracks
+                   WHERE ArtistTracks.track_id = TracksGenres.track_id
+                       AND TracksGenres.genre_id = '%s'
+                   GROUP BY ArtistTracks.artist_id) AS total_pop_count_for_artist,
+
+                  (SELECT ArtistTracks.artist_id,
+                          COUNT(ArtistTracks.track_id) AS num
+                   FROM ArtistTracks
+                   GROUP BY ArtistTracks.artist_id) AS total_tracks_count_for_artist
+              WHERE Artists.artist_id = total_pop_count_for_artist.artist_id
+                  AND total_pop_count_for_artist.artist_id = total_tracks_count_for_artist.artist_id
+                  AND total_pop_count_for_artist.num > 0.5 * total_tracks_count_for_artist.num)
+     ORDER BY RAND()
+     LIMIT 3)
 """

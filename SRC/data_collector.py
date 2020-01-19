@@ -224,6 +224,6 @@ def get_artists(limit, offset):
 
 # collect_genres()
 
-for i in range(5, 1000):
+for i in range(6, 1000):
     get_artists(limit=100, offset=i*100)
 print("success")
