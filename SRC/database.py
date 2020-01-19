@@ -1,5 +1,7 @@
 import mysql.connector
 import sql_queries
+import random
+from datetime import datetime
 import json
 
 from constants import *
@@ -24,24 +26,74 @@ class Database:
             ret.append(dict(zip(field_names, row)))
         return ret
 
-    def get_random_row(self, table_name):
-        self.cursor.execute(sql_queries.get_random_row % table_name)
-        return self.organized_results()
+    def get_artist_with_more_albums_than_avg(self):
+        self.cursor.execute(sql_queries.get_artist_with_more_albums_than_avg)
+        data = self.cursor.fetchall()
+        # return: correct_answer, [wrong_answers]
+        return data[0][0], [data[i][0] for i in range(1, len(data))]
 
-    def get_artist_name(self, artist_id):
-        self.cursor.execute(sql_queries.get_artist_name % artist_id)
-        return self.organized_results()
+    def get_avg_tracks_for_artist_albums(self):
+        avg_track_in_album = 0
+        while not avg_track_in_album:
+            self.cursor.execute(sql_queries.get_avg_tracks_for_artist_albums)
+            data = self.cursor.fetchall()
+            if not data:
+                continue
+            avg_track_in_album = data[0][0]
+        avg_track_in_album = round(float(avg_track_in_album), 2)
+        # return: avg(tracks_count_in_album), 3 wrong answers, artist_name
+        return avg_track_in_album, self.generate_3_random_numbers(avg_track_in_album), data[0][1]
 
-    def get_artist_last_album(self, artist_id):
-        self.cursor.execute(sql_queries.get_artist_last_album % artist_id)
-        data = self.organized_results()
-        if data:
-            return data.get('album_name')
-        return None
+    def generate_3_random_numbers(self, avg_num):
+        random_nums = set([])
+        while len(random_nums) < 3:
+            random1 = round(random.uniform(4.0, 20.0), 2)
+            if random1 != avg_num and random1 not in random_nums:
+                random_nums.add(random1)
+        return list(random_nums)
 
-    def get_random_wrong_answers(self, attribute_name, table_name, unwanted_value):
-        self.cursor.execute(sql_queries.get_random_wrong_answers % (attribute_name, table_name,
-                                                                    attribute_name, unwanted_value))
-        data = self.organized_results()
-        return [row[attribute_name] for row in data]
+    def get_movie_with_most_played_tracks_in_genre(self):
+        data = []
+        while len(data) == 0:
+            self.cursor.execute(sql_queries.get_movie_with_most_played_tracks_in_genre)
+            data = self.cursor.fetchall()
+        # return correct answer, [wrong answers], genre_name
+        return data[0][0], [data[i][1] for i in range(len(data))], data[0][len(data) - 1]
+
+    def get_artist_with_mainly_tracks_from_specific_genre(self):
+        data = []
+        while len(data) < 4:
+            genre_id, genre_name = self.generate_random_genre()
+            self.cursor.execute(sql_queries.get_artist_with_mainly_tracks_from_specific_genre % (genre_id, genre_id))
+            data = self.cursor.fetchall()
+        # return correct_answer, [wrong_answers], genre_name
+        return data[0][0], [data[i][0] for i in range(1, len(data))], genre_name
+
+    def generate_random_genre(self):
+        self.cursor.execute(sql_queries.get_random_genre)
+        data = self.cursor.fetchall()
+        # return genre_id, genre_name
+        return data[0][0], data[0][1]
+
+    def get_artist_with_album_released_in_specific_decade_with_love_song(self):
+        decades = [year for year in range(1950, 2010, 10)]
+        data = []
+        while len(data) < 4:
+            random.shuffle(decades)
+            decade_start = datetime(decades[0], 1, 1)
+            decade_end = datetime(decades[0] + 10, 1, 1)
+            self.cursor.execute(sql_queries.get_artist_with_album_released_in_specific_decade_with_love_song, (decade_start, decade_end, decade_start, decade_end))
+            data = self.cursor.fetchall()
+        # return correct_answer, [wrong_answers], decade
+        return data[0][0], [data[i][0] for i in range(1, len(data))], decades[0]
+
+    def get_highest_rated_artist_without_movie_tracks(self):
+        is_data_ok = False
+        data = []
+        while not is_data_ok:
+            self.cursor.execute(sql_queries.get_highest_rated_artist_without_movie_tracks)
+            data = self.cursor.fetchall()
+            is_data_ok = all([artist[1] is not None for artist in data])
+        # return correct_answer, [wrong_answers]
+        return data[0][1], [data[i][1] for i in range(1, len(data))]
 

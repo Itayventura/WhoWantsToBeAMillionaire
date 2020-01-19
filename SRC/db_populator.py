@@ -2,6 +2,7 @@ import mysql.connector
 
 from constants import *
 
+
 class DatabasePopulator:
     def __init__(self):
         self.cnx = mysql.connector.connect(user=DB_USERNAME,
