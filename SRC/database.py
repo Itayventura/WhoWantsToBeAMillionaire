@@ -66,7 +66,7 @@ class Database:
             genre_id, genre_name = self.generate_random_genre()
             self.cursor.execute(sql_queries.get_artist_with_mainly_tracks_from_specific_genre % (genre_id, genre_id))
             data = self.cursor.fetchall()
-        # return correct answer, [wrong answers], genre_name
+        # return correct_answer, [wrong_answers], genre_name
         return data[0][0], [data[i][0] for i in range(1, len(data))], genre_name
 
     def generate_random_genre(self):
@@ -84,5 +84,16 @@ class Database:
             decade_end = datetime(decades[0] + 10, 1, 1)
             self.cursor.execute(sql_queries.get_artist_with_album_released_in_specific_decade_with_love_song, (decade_start, decade_end, decade_start, decade_end))
             data = self.cursor.fetchall()
-        # return correct answer, [wrong answers], decade
+        # return correct_answer, [wrong_answers], decade
         return data[0][0], [data[i][0] for i in range(1, len(data))], decades[0]
+
+    def get_highest_rated_artist_without_movie_tracks(self):
+        is_data_ok = False
+        data = []
+        while not is_data_ok:
+            self.cursor.execute(sql_queries.get_highest_rated_artist_without_movie_tracks)
+            data = self.cursor.fetchall()
+            is_data_ok = all([artist[1] is not None for artist in data])
+        # return correct_answer, [wrong_answers]
+        return data[0][1], [data[i][1] for i in range(1, len(data))]
+

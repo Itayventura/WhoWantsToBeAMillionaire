@@ -15,7 +15,8 @@ def generate_question():
                       avg_tracks_for_artist_albums,
                       artist_with_more_albums_than_avg,
                       movie_with_most_played_tracks_in_genre,
-                      artist_with_mainly_tracks_from_specific_genre]
+                      artist_with_mainly_tracks_from_specific_genre,
+                      highest_rated_artist_without_movie_tracks]
     random.shuffle(questions_list)
     return questions_list[0]()
 
@@ -44,9 +45,9 @@ def index():
             session['number'] += 1
             if session['number'] == session['target']:
                 data['win'] = 'true'
-                print(data)
+                # print(data)
             return jsonify(**data)
-        print(data)
+        # print(data)
         return jsonify(**data)
 
 
@@ -109,6 +110,18 @@ def artist_with_mainly_tracks_from_specific_genre():
 def artist_with_album_released_in_specific_decade_with_love_song():
     correct_answer, wrong_answers, decade = db.get_artist_with_album_released_in_specific_decade_with_love_song()
     question = QUESTION_ARTIST_WITH_ALBUM_RELEASED_IN_SPECIFIC_DECADE_WITH_LOVE_SONG.format(decade=str(decade))
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+
+def highest_rated_artist_without_movie_tracks():
+    question = QUESTION_HIGHEST_RATED_ARTIST_WITHOUT_MOVIE_TRACKS
+    correct_answer, wrong_answers = db.get_highest_rated_artist_without_movie_tracks()
     answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
     answers['win'] = 'false'
     answers['correct'] = 'true'

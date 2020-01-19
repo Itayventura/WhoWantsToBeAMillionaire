@@ -172,3 +172,27 @@ UNION
      ORDER BY RAND()
      LIMIT 3)
 """
+
+get_highest_rated_artist_without_movie_tracks = """
+SELECT *
+FROM
+    (SELECT artist_rating,
+
+         (SELECT artist_name
+          FROM Artists
+          WHERE NOT EXISTS
+                  (SELECT 1
+                   FROM MovieTracks,
+                        ArtistTracks
+                   WHERE Artists.artist_id = ArtistTracks.artist_id
+                       AND MovieTracks.track_id = ArtistTracks.track_id)
+              AND Artists.artist_rating = ratings.artist_rating
+          ORDER BY rand()
+          LIMIT 1) AS artist_name
+     FROM
+         (SELECT DISTINCT artist_rating
+          FROM Artists) AS ratings
+     ORDER BY rand()
+     LIMIT 4) AS random_artists
+ORDER BY artist_rating DESC
+"""

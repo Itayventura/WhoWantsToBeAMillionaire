@@ -38,3 +38,4 @@ QUESTION_MOVIE_WITH_MOST_PLAYED_TRACKS_FROM_GENRE = 'What is the movie with the 
 QUESTION_ARTIST_WITH_MAINLY_TRACKS_FROM_SPECIFIC_GENRE = 'To which of the following artists most of their tracks are from genre {genre}?'
 QUESTION_ARTIST_WITH_ALBUM_RELEASED_IN_SPECIFIC_DECADE_WITH_LOVE_SONG = 'Which of the following artists has an album released' \
                                                                         ' in the {decade}\'s that has a track which contains the word \'love\'?'
+QUESTION_HIGHEST_RATED_ARTIST_WITHOUT_MOVIE_TRACKS = 'Which of the following is the highest rated artist that his tracks have not been played in any movie?'
