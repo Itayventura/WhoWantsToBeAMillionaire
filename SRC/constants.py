@@ -31,7 +31,6 @@ GENIUS_API_KEY = 'JcdMNbQcAaiRz00B_YjtDUSCfm-NGAtwfae_WI-KfWvUpf6ZozUhYFlVFpGkE6
 TUNEFIND_URL = 'https://www.tunefind.com'
 
 """ QUESTIONS """
-QUESTION_LAST_ALBUM = 'What is {artist}\'s last album?'
 QUESTION_ARTIST_WITH_MORE_ALBUMS_THAN_AVG = 'Which artist has more albums than the average?'
 QUESTION_AVG_TRACKS_IN_ALBUM_FOR_ARTIST = 'What is the average tracks number in {artist}\'s albums?'
 QUESTION_MOVIE_WITH_MOST_PLAYED_TRACKS_FROM_GENRE = 'What is the movie with the most played tracks from genre \'{genre}\'?'
