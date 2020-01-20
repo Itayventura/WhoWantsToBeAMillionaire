@@ -196,3 +196,126 @@ FROM
      LIMIT 4) AS random_artists
 ORDER BY artist_rating DESC
 """
+
+'''------------------------simple queires-------------------------'''
+
+get_random_track_lyrics = """
+SELECT Tracks.lyrics
+FROM Tracks
+GROUP BY lyrics
+HAVING lyrics IS NOT NULL
+AND lyrics != '(instumental)'
+ORDER BY RAND()
+LIMIT 1
+"""
+
+get_the_most_rated_artist = """
+SELECT correct_artist.artist_name,
+       Artists.artist_name
+FROM
+    (SELECT Artists.artist_name,
+            Artists.artist_rating
+     FROM Artists
+     ORDER BY RAND()
+     LIMIT 1) AS correct_artist,
+     Artists
+WHERE Artists.artist_rating < correct_artist.artist_rating
+ORDER BY RAND()
+LIMIT 3
+"""
+
+get_first_released_album_out_of_four = """
+SELECT correct_album.album_name,
+       Albums.album_name
+FROM
+    (SELECT Albums.album_name,
+            Albums.release_date
+     FROM Albums
+     ORDER BY RAND()
+     LIMIT 1) AS correct_album,
+     Albums
+WHERE Albums.release_date > correct_album.release_date
+ORDER BY RAND()
+LIMIT 3
+"""
+
+get_track_in_movie = """
+SELECT answer.movie_name,
+       answer.track_name,
+       Tracks.track_name
+FROM
+    (SELECT Tracks.track_name,
+            Movies.movie_name,
+            Movies.movie_id
+     FROM Tracks,
+          MovieTracks,
+          Movies
+     WHERE Tracks.track_id = MovieTracks.track_id
+         AND MovieTracks.movie_id = Movies.movie_id
+     ORDER BY RAND()
+     LIMIT 1) AS answer,
+     Tracks,
+     MovieTracks
+WHERE Tracks.track_id = MovieTracks.track_id
+    AND MovieTracks.movie_id != answer.movie_id
+ORDER BY RAND()
+LIMIT 3
+"""
+
+get_movie_without_track = """
+SELECT Tracks.track_name,
+       answer.movie_name,
+       Movies.movie_name
+FROM
+    (SELECT played_track.track_id,
+            Movies.movie_name
+     FROM
+         (SELECT MovieTracks.track_id
+          FROM MovieTracks
+          GROUP BY MovieTracks.track_id
+          HAVING COUNT(*) >= 3
+          ORDER BY RAND()
+          LIMIT 1) played_track,
+          MovieTracks,
+          Movies
+     WHERE MovieTracks.movie_id = Movies.movie_id
+         AND MovieTracks.track_id != played_track.track_id
+     ORDER BY RAND()
+     LIMIT 1) AS answer,
+     Movies,
+     MovieTracks,
+     Tracks
+WHERE MovieTracks.track_id = answer.track_id
+    AND Movies.movie_id = MovieTracks.movie_id
+    AND Tracks.track_id = answer.track_id
+ORDER BY RAND()
+LIMIT 3
+"""
+
+get_track_of_specific_artist = """
+SELECT answer.track_name,
+       answer.artist_name,
+       Tracks.track_name
+FROM
+    (SELECT Tracks.track_name,
+            Artists.artist_name,
+            Tracks.artist_id
+     FROM Tracks,
+          Artists
+     WHERE Artists.artist_id = Tracks.artist_id
+     ORDER BY RAND()
+     LIMIT 1) answer,
+     Tracks
+WHERE Tracks.artist_id != answer.artist_id
+ORDER BY RAND()
+LIMIT 3
+"""
+
+get_year_of_birth_of_specific_artist = """
+SELECT Artists.artist_name,
+       Artists.start_date
+FROM Artists
+WHERE Artists.artist_type = 'Person'
+ORDER BY RAND()
+LIMIT 1
+"""

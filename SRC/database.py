@@ -1,6 +1,7 @@
 import mysql.connector
 import sql_queries
 import random
+import re
 from datetime import datetime
 import json
 
@@ -96,4 +97,114 @@ class Database:
             is_data_ok = all([artist[1] is not None for artist in data])
         # return correct_answer, [wrong_answers]
         return data[0][1], [data[i][1] for i in range(1, len(data))]
+
+    def get_sentence_to_fill_with_missing_word(self):
+        data = []
+        sentence = None
+        while not sentence:
+            self.cursor.execute(sql_queries.get_random_track_lyrics)
+            data = self.cursor.fetchall()
+            sentence = self.get_sentence_from_lyrics(data[0][0])
+        # remove special characters from lyrics to apply correct logic
+        re.sub(r'\?|\.|,|;|\"|:', '', data[0][0])
+        sentence, missing_word = self.get_word_and_sentence_without_the_word(sentence)
+        wrong_answers = self.get_3_wrong_missing_words(data[0][0], missing_word)
+        # return correct_answer, [wrong_answers], sentence_to_fill
+        return missing_word, wrong_answers, sentence
+
+    def get_3_wrong_missing_words(self, lyrics, missing_word):
+        split_lyrics = lyrics.split()
+        wrong_answers = []
+        while len(wrong_answers) < 3:
+            random_word = random.choice(split_lyrics)
+            if random_word and random_word != missing_word and random_word.lower() not in wrong_answers:
+                wrong_answers.append(random_word.lower())
+        return wrong_answers
+
+    def get_word_and_sentence_without_the_word(self, sentence):
+        split_sentence = sentence.split()
+        rand = random.randint(0, len(split_sentence) - 1)
+        while len(split_sentence[rand]) < 3:
+            rand = random.randint(0, len(split_sentence) - 1)
+        missing_word = split_sentence[rand]
+        return sentence.replace(missing_word, "____", 1).lower(), missing_word.lower()
+
+    def get_sentence_from_lyrics(self, lyrics):
+        sentences = lyrics.splitlines()
+        print(sentences)
+        for sentence in sentences:
+            if not sentence:
+                continue
+            split_sentence = sentence.split()
+            if len(split_sentence) >= 3:
+                print(sentence)
+                return sentence
+        return None
+
+    def get_the_most_rated_artist(self):
+        data = []
+        while len(data) == 0:
+            self.cursor.execute(sql_queries.get_the_most_rated_artist)
+            data = self.cursor.fetchall()
+        # return correct_answer, [wrong_answers]
+        return data[0][0], [data[i][1] for i in range(0, len(data))]
+
+    def get_first_released_album_out_of_four(self):
+        data = []
+        while len(data) == 0:
+            self.cursor.execute(sql_queries.get_the_most_rated_artist)
+            data = self.cursor.fetchall()
+        # return correct_answer, [wrong_answers]
+        return data[0][0], [data[i][1] for i in range(0, len(data))]
+
+    def get_track_in_movie(self):
+        data = []
+        while len(data) == 0:
+            self.cursor.execute(sql_queries.get_track_in_movie)
+            data = self.cursor.fetchall()
+        # return correct_answer, [wrong_answers], movie_name
+        return data[0][1], [data[i][2] for i in range(0, len(data))], data[0][0]
+
+    def get_movie_without_track(self):
+        data = []
+        while len(data) == 0:
+            self.cursor.execute(sql_queries.get_movie_without_track)
+            data = self.cursor.fetchall()
+        # return correct_answer, [wrong_answers], track_name
+        return data[0][1], [data[i][2] for i in range(0, len(data))], data[0][0]
+
+    def get_track_of_specific_artist(self):
+        data = []
+        while len(data) == 0:
+            self.cursor.execute(sql_queries.get_track_of_specific_artist)
+            data = self.cursor.fetchall()
+        # return correct_answer, [wrong_answers], artist_name
+        return data[0][0], [data[i][2] for i in range(0, len(data))], data[0][1]
+
+    def get_year_of_birth_of_specific_artist(self):
+        data = []
+        is_data_ok = False
+        while not is_data_ok:
+            self.cursor.execute(sql_queries.get_year_of_birth_of_specific_artist)
+            data = self.cursor.fetchall()
+            is_data_ok = data[0][1] is not None
+        wrong_answers = self.generate_3_date_of_birth(data[0][1])
+        # return correct_answer, [wrong_answers], artist_name
+        return data[0][1], wrong_answers, data[0][0]
+
+    def generate_3_date_of_birth(self, origin_date):
+        dates = []
+        given_year = origin_date.year
+        while len(dates) < 3:
+            random_day = random.randint(1, 28)
+            random_month = random.randint(1, 12)
+            if given_year >= 2000:
+                end_range = given_year
+            else:
+                end_range = given_year + 10
+            random_year = random.randint(given_year - 30, end_range)
+            random_date_string = str(datetime(random_year, random_month, random_day))
+            if random_date_string not in dates and random_date_string != str(origin_date):
+                dates.append(random_date_string[:11])
+        return dates
 

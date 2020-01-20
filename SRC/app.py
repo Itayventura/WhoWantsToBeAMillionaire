@@ -16,7 +16,14 @@ def generate_question():
                       artist_with_more_albums_than_avg,
                       movie_with_most_played_tracks_in_genre,
                       artist_with_mainly_tracks_from_specific_genre,
-                      highest_rated_artist_without_movie_tracks]
+                      highest_rated_artist_without_movie_tracks,
+                      sentence_to_fill_with_missing_word,
+                      the_most_rated_artist,
+                      first_released_album_out_of_four,
+                      track_in_movie,
+                      movie_without_track,
+                      track_of_specific_artist,
+                      year_of_birth_of_specific_artist]
     random.shuffle(questions_list)
     return questions_list[0]()
 
@@ -122,6 +129,90 @@ def artist_with_album_released_in_specific_decade_with_love_song():
 def highest_rated_artist_without_movie_tracks():
     question = QUESTION_HIGHEST_RATED_ARTIST_WITHOUT_MOVIE_TRACKS
     correct_answer, wrong_answers = db.get_highest_rated_artist_without_movie_tracks()
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+
+def sentence_to_fill_with_missing_word():
+    correct_answer, wrong_answers, sentence = db.get_sentence_to_fill_with_missing_word()
+    question = QUESTION_FILL_THE_MISSING_WORD.format(sentence=sentence)
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+
+def the_most_rated_artist():
+    correct_answer, wrong_answers = db.get_the_most_rated_artist()
+    question = QUESTION_MOST_RATED_ARTIST
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+
+def first_released_album_out_of_four():
+    correct_answer, wrong_answers = db.get_first_released_album_out_of_four()
+    question = QUESTION_FIRST_RELEASED_ALBUM
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+
+def track_in_movie():
+    correct_answer, wrong_answers, movie_name = db.get_track_in_movie()
+    question = QUESTION_TRACK_IN_SPECIFIC_MOVIE.format(movie=movie_name)
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+
+def movie_without_track():
+    correct_answer, wrong_answers, track_name = db.get_movie_without_track()
+    question = QUESTION_MOVIE_WITHOUT_SPECIFIC_TRACK.format(track=track_name)
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+
+def track_of_specific_artist():
+    correct_answer, wrong_answers, artist_name = db.get_track_of_specific_artist()
+    question = QUESTION_TRACK_PLAYED_BY_SPECIFIC_ARTIST.format(artist=artist_name)
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    # print("answer:")
+    # print(answers)
+    return answers, correct_answer_number
+
+
+def year_of_birth_of_specific_artist():
+    correct_answer, wrong_answers, artist_name = db.get_year_of_birth_of_specific_artist()
+    question = QUESTION_SPECIFIC_ARTIST_DATE_OF_BIRTH.format(artist=artist_name)
     answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
     answers['win'] = 'false'
     answers['correct'] = 'true'
