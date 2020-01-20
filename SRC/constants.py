@@ -38,3 +38,11 @@ QUESTION_ARTIST_WITH_MAINLY_TRACKS_FROM_SPECIFIC_GENRE = 'To which of the follow
 QUESTION_ARTIST_WITH_ALBUM_RELEASED_IN_SPECIFIC_DECADE_WITH_LOVE_SONG = 'Which of the following artists has an album released' \
                                                                         ' in the {decade}\'s that has a track which contains the word \'love\'?'
 QUESTION_HIGHEST_RATED_ARTIST_WITHOUT_MOVIE_TRACKS = 'Which of the following is the highest rated artist that his tracks have not been played in any movie?'
+
+QUESTION_FILL_THE_MISSING_WORD = 'Fill the missing word of the following sentence: \'{sentence}\''
+QUESTION_MOST_RATED_ARTIST = 'Which of the following is the most highly rated artist?'
+QUESTION_FIRST_RELEASED_ALBUM = 'Which of the following albums was the first to be released?'
+QUESTION_TRACK_IN_SPECIFIC_MOVIE = 'What track is played in the movie \'{movie}\'?'
+QUESTION_MOVIE_WITHOUT_SPECIFIC_TRACK = 'In which movie the track \'{track}\' is not played?'
+QUESTION_TRACK_PLAYED_BY_SPECIFIC_ARTIST = 'What track is played by the artist \'{artist}\'?'
+QUESTION_SPECIFIC_ARTIST_DATE_OF_BIRTH = 'What is the date of birth of the artist \'{artist}\'?'

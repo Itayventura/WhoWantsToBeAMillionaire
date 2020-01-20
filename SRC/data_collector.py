@@ -56,6 +56,9 @@ def scrap_song_url(url):
         if status_code <= 299:
             html = BeautifulSoup(response.text, 'html.parser')
             lyrics = html.find("div", {"class": "lyrics"}).get_text()
+    # remove redundant comments in lyrics
+    re.sub(r'\[.*\]', '', lyrics)
+    re.sub(r'\(.*\)', '', lyrics)
     return lyrics
 
 
