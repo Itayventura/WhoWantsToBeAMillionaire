@@ -25,8 +25,7 @@ def generate_question():
                       track_of_specific_artist,
                       year_of_birth_of_specific_artist]
     random.shuffle(questions_list)
-    # return questions_list[0]()
-    return year_of_birth_of_specific_artist()
+    return questions_list[0]()
 
 
 @app.route('/', methods=['GET', 'POST'])
