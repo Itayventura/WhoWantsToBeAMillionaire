@@ -227,7 +227,7 @@ def get_artists(limit, offset):
                         add_all_artist_albums(artist_id)
 
 
-collect_genres()
+# collect_genres()
 
 for i in range(0, 5000):
     get_artists(limit=50, offset=i*50)
