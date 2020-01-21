@@ -158,7 +158,7 @@ def add_album_entry(album_data, artist_id):
     album_id = album_data.get('album_id', '')
     album_name = album_data.get('album_name', '')
     release_date = parse_date(album_data.get('album_release_date', '0000'))
-    added_albums.add(album_name)
+    added_albums.add(album_name.lower())
     # enter the album entry to the ALBUMS table
     values = [album_id, album_name, release_date]
     # print(str((ALBUMS, values)))
@@ -192,7 +192,7 @@ def add_all_artist_albums(musixmatch_artist_id):
         if response_body and response_body.get('album_list'):
             for album in albums_response['message']['body']['album_list']:
                 album = album['album']
-                if album.get('album_release_type', 'Album') == 'Album' and album.get('album_name', '') not in added_albums:
+                if album.get('album_release_type', 'Album') == 'Album' and album.get('album_name', '').lower() not in added_albums:
                     add_album_entry(album, musixmatch_artist_id)
 
 
@@ -227,7 +227,7 @@ def get_artists(limit, offset):
                         add_all_artist_albums(artist_id)
 
 
-# collect_genres()
+collect_genres()
 
 for i in range(0, 5000):
     get_artists(limit=50, offset=i*50)
