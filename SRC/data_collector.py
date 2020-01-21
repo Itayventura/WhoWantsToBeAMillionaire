@@ -150,7 +150,7 @@ def add_album_tracks(album_id, artist_id):
         if response_body and response_body.get('track_list'):
             for track in response_body['track_list']:
                 track = track['track']
-                if track['track_name'] and not track['track_name'].find('['):
+                if track['track_name'] and track['track_name'].find('[') == -1:
                     add_track_entry(track, album_id, artist_id)
 
 
@@ -227,8 +227,8 @@ def get_artists(limit, offset):
                         add_all_artist_albums(artist_id)
 
 
-collect_genres()
+# collect_genres()
 
-for i in range(0, 10000):
+for i in range(0, 5000):
     get_artists(limit=50, offset=i*50)
 print("success")
