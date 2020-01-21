@@ -15,7 +15,6 @@ artist_id INT UNSIGNED,
 artist_name VARCHAR(100) NOT NULL,
 artist_type ENUM("Person", "Group", "Orchestra", "Choir", "Character", "Other"),
 artist_rating TINYINT,
-country VARCHAR(50),
 start_date DATE,
 end_date DATE,
 PRIMARY KEY (artist_id)
@@ -25,7 +24,6 @@ CREATE TABLE Albums (
 album_id INT UNSIGNED,
 album_name VARCHAR(100) NOT NULL,
 release_date DATE,
-release_type ENUM("Single", "Album", "Compilation", "Remix", "Live"),
 PRIMARY KEY (album_id)
 );
 

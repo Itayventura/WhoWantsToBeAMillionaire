@@ -57,8 +57,8 @@ def scrap_song_url(url):
             html = BeautifulSoup(response.text, 'html.parser')
             lyrics = html.find("div", {"class": "lyrics"}).get_text()
     # remove redundant comments in lyrics
-    re.sub(r'\[.*\]', '', lyrics)
-    re.sub(r'\(.*\)', '', lyrics)
+    lyrics = re.sub(r'\[.+?\]', '', lyrics)
+    lyrics = re.sub(r'\(.+?\)', '', lyrics)
     return lyrics
 
 
@@ -139,7 +139,7 @@ def add_track_entry(track_data, album_id, artist_id):
 def add_album_tracks(album_id, artist_id):
     params = {
         'album_id': album_id,
-        'page_size': 4,  # TODO: change to 100
+        'page_size': 100,
         'apikey': MUSIXMATCH_API_KEY
     }
     tracks_response = http_request(url=MUSIXMATCH_URL + "/album.tracks.get", params=params)
@@ -155,9 +155,8 @@ def add_album_entry(album_data, artist_id):
     album_id = album_data.get('album_id', '')
     album_name = album_data.get('album_name', '')
     release_date = parse_date(album_data.get('album_release_date', '0000'))
-    release_type = album_data.get('album_release_type', 'Album')
     # enter the album entry to the ALBUMS table
-    values = [album_id, album_name, release_date, release_type]
+    values = [album_id, album_name, release_date]
     # print(str((ALBUMS, values)))
     dbp.insert_row(ALBUMS, values)
     # print(str((ARTIST_ALBUMS, [album_id, artist_id])))
@@ -169,11 +168,9 @@ def add_artist_entry(artist_data, artist_id):
     artist_name = artist_data.get('name', '')
     artist_type = artist_data.get('type', '')
     artist_rating = artist_data.get('score', -1)
-    artist_country = artist_data.get('area', {}).get('name', '')
     birth = parse_date(artist_data.get('life-span', {}).get('begin', '0000'))
     death = parse_date(artist_data.get('life-span', {}).get('end', '0000'))
-    values = [artist_id, artist_name, artist_type, artist_rating,
-              artist_country, birth, death]
+    values = [artist_id, artist_name, artist_type, artist_rating, birth, death]
     # print(str((ARTISTS, values)))
     dbp.insert_row(ARTISTS, values)
 
@@ -182,7 +179,7 @@ def add_all_artist_albums(musixmatch_artist_id):
     params = {
         'artist_id': musixmatch_artist_id,
         'g_album_name': 1,
-        'page_size': 4,  # TODO: change to 100
+        'page_size': 100,
         'apikey': MUSIXMATCH_API_KEY
     }
     albums_response = http_request(url=MUSIXMATCH_URL + "/artist.albums.get", params=params)
@@ -191,7 +188,9 @@ def add_all_artist_albums(musixmatch_artist_id):
         if response_body and response_body.get('album_list'):
             for album in albums_response['message']['body']['album_list']:
                 album = album['album']
-                add_album_entry(album, musixmatch_artist_id)
+                print(album)
+                if album.get('album_release_type', 'Album') == 'Album':
+                    add_album_entry(album, musixmatch_artist_id)
 
 
 def get_musixmatch_artist_id(artist):
@@ -225,8 +224,8 @@ def get_artists(limit, offset):
                         add_all_artist_albums(artist_id)
 
 
-# collect_genres()
+collect_genres()
 
-for i in range(6, 1000):
-    get_artists(limit=100, offset=i*100)
+for i in range(0, 10000):
+    get_artists(limit=50, offset=i*50)
 print("success")
