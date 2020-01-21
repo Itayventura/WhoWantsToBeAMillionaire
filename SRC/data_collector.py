@@ -10,6 +10,8 @@ from constants import *
 
 dbp = DatabasePopulator()
 
+added_albums = {''}
+
 
 def str_to_uid(text):
     m = hashlib.md5()
@@ -148,13 +150,15 @@ def add_album_tracks(album_id, artist_id):
         if response_body and response_body.get('track_list'):
             for track in response_body['track_list']:
                 track = track['track']
-                add_track_entry(track, album_id, artist_id)
+                if track['track_name'] and not track['track_name'].find('['):
+                    add_track_entry(track, album_id, artist_id)
 
 
 def add_album_entry(album_data, artist_id):
     album_id = album_data.get('album_id', '')
     album_name = album_data.get('album_name', '')
     release_date = parse_date(album_data.get('album_release_date', '0000'))
+    added_albums.add(album_name)
     # enter the album entry to the ALBUMS table
     values = [album_id, album_name, release_date]
     # print(str((ALBUMS, values)))
@@ -188,7 +192,7 @@ def add_all_artist_albums(musixmatch_artist_id):
         if response_body and response_body.get('album_list'):
             for album in albums_response['message']['body']['album_list']:
                 album = album['album']
-                if album.get('album_release_type', 'Album') == 'Album':
+                if album.get('album_release_type', 'Album') == 'Album' and album.get('album_name', '') not in added_albums:
                     add_album_entry(album, musixmatch_artist_id)
 
 
