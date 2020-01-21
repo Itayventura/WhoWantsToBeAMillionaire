@@ -188,7 +188,6 @@ def add_all_artist_albums(musixmatch_artist_id):
         if response_body and response_body.get('album_list'):
             for album in albums_response['message']['body']['album_list']:
                 album = album['album']
-                print(album)
                 if album.get('album_release_type', 'Album') == 'Album':
                     add_album_entry(album, musixmatch_artist_id)
 
