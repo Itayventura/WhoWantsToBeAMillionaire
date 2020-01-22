@@ -150,7 +150,7 @@ get_artist_with_album_released_in_specific_decade_with_love_song = """
                        FROM AlbumTracks,
                             Tracks
                        WHERE AlbumTracks.track_id = Tracks.track_id
-                           AND Tracks.lyrics LIKE '%love%'))
+                           AND MATCH (lyrics) AGAINST ('Love' IN NATURAL LANGUAGE MODE)))
      ORDER BY RAND()
      LIMIT 1)
 UNION
@@ -168,7 +168,7 @@ UNION
                        FROM AlbumTracks,
                             Tracks
                        WHERE AlbumTracks.track_id = Tracks.track_id
-                           AND Tracks.lyrics LIKE '%love%'))
+                           AND MATCH (lyrics) AGAINST ('Love' IN NATURAL LANGUAGE MODE)))
      ORDER BY RAND()
      LIMIT 3)
 """
@@ -318,4 +318,25 @@ FROM Artists
 WHERE Artists.artist_type = 'Person'
 ORDER BY RAND()
 LIMIT 1
+"""
+
+'''------------------------full text query-------------------------'''
+
+get_song_that_contain_a_word_from_list_of_words = """
+(SELECT track_name
+FROM Tracks
+WHERE MATCH (lyrics) AGAINST ('%s' IN NATURAL LANGUAGE MODE)
+ORDER BY RAND()
+LIMIT 1)
+
+UNION 
+
+(SELECT track_name
+FROM Tracks
+WHERE track_name
+  not in (SELECT track_name
+            FROM Tracks
+            WHERE MATCH (lyrics) AGAINST ('%s' IN NATURAL LANGUAGE MODE))
+ORDER BY RAND()
+LIMIT 3)
 """

@@ -208,3 +208,12 @@ class Database:
                 dates.append(random_date_string[:11])
         return dates
 
+    def get_song_that_contain_a_word_from_list_of_words(self):
+        words = ["sky", "sea", "vacation", "beach", "europe"]
+        word = random.choice(words)
+        data = []
+        while len(data) < 4:
+            self.cursor.execute(sql_queries.get_song_that_contain_a_word_from_list_of_words % (word, word))
+            data = self.cursor.fetchall()
+        # return: correct_answer, [wrong_answers], word
+        return data[0][0], [data[i][0] for i in range(1, len(data))], word

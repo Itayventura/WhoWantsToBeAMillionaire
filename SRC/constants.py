@@ -3,7 +3,7 @@ DB_USERNAME = 'DbMysql02'
 DB_PASSWORD = 'neworder'
 # DB_HOST = 'mysqlsrv1.cs.tau.ac.il'
 DB_HOST = '127.0.0.1'
-DB_PORT = 3305  # 3306
+DB_PORT = 3306  # 3306
 DB_NAME = 'DbMysql02'
 
 """ entities tables """
@@ -46,3 +46,4 @@ QUESTION_TRACK_IN_SPECIFIC_MOVIE = 'What track is played in the movie \'{movie}\
 QUESTION_MOVIE_WITHOUT_SPECIFIC_TRACK = 'In which movie the track \'{track}\' is not played?'
 QUESTION_TRACK_PLAYED_BY_SPECIFIC_ARTIST = 'What track is played by the artist \'{artist}\'?'
 QUESTION_SPECIFIC_ARTIST_DATE_OF_BIRTH = 'What is the date of birth of the artist \'{artist}\'?'
+QUESTION_SONG_CONTAINS_WORDS = 'Which song contains the word \'{word}\'?'

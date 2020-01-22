@@ -4,6 +4,8 @@ from flask import Flask, render_template, jsonify, request, session, redirect
 from database import Database
 from constants import *
 
+from SRC.constants import QUESTION_SONG_CONTAINS_WORDS
+
 app = Flask(__name__)
 app.secret_key = 't3mp_k3y'
 service_port = 40004
@@ -23,7 +25,8 @@ def generate_question():
                       track_in_movie,
                       movie_without_track,
                       track_of_specific_artist,
-                      year_of_birth_of_specific_artist]
+                      year_of_birth_of_specific_artist,
+                      song_that_contains_a_word]
     random.shuffle(questions_list)
     return questions_list[0]()
 
@@ -221,6 +224,18 @@ def year_of_birth_of_specific_artist():
     # print(answers)
     return answers, correct_answer_number
 
+def song_that_contains_a_word():
+    correct_answer, wrong_answers, word_in_song = db.get_song_that_contain_a_word_from_list_of_words()
+    question = QUESTION_SONG_CONTAINS_WORDS.format(word=word_in_song)
+    answers, correct_answer_number = shuffle_answers(wrong_answers, correct_answer)
+    answers['win'] = 'false'
+    answers['correct'] = 'true'
+    answers['question'] = question
+    print("answer:")
+    print(answers)
+    return answers, correct_answer_number
+
 
 if __name__ == "__main__":
     app.run(port=service_port, host="0.0.0.0", debug=False)
+
