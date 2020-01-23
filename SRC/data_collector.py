@@ -128,7 +128,7 @@ def track_not_in_db(filtered_track_name, track_id, added_tracks):
 def add_track_entry(track_data, album_id, artist_id, added_tracks):
     track_name = track_data.get('track_name', '')
     track_id = track_data.get('track_id', '')
-    filtered_track_name = re.sub(r'[^a-zA-Z0-9]', '', track_name).lower()
+    filtered_track_name = re.sub(r'\[.+?\]|\(.+?\)|[^a-zA-Z0-9]', '', track_name).lower()
     if track_not_in_db(filtered_track_name, track_id, added_tracks):
         track_rating = track_data.get('track_rating', -1)
         artist_name = track_data.get('artist_name', '')
@@ -189,7 +189,7 @@ def add_artist_entry(artist_data, artist_id):
 
 def album_not_in_db(album, added_albums):
     album_name = album.get('album_name', '')
-    album_name = re.sub(r'[^a-zA-Z0-9]', '', album_name).lower()
+    album_name = re.sub(r'\[.+?\]|\(.+?\)|[^a-zA-Z0-9]', '', album_name).lower()
     if album_name not in added_albums:
         added_albums.add(album_name)
         return True
