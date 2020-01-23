@@ -299,14 +299,18 @@ SELECT answer.track_name,
 FROM
     (SELECT Tracks.track_name,
             Artists.artist_name,
-            Tracks.artist_id
+            ArtistTracks.artist_id
      FROM Tracks,
-          Artists
-     WHERE Artists.artist_id = Tracks.artist_id
+          Artists,
+          ArtistTracks
+     WHERE Artists.artist_id = ArtistTracks.artist_id
+     AND ArtistTracks.track_id = Tracks.track_id
      ORDER BY RAND()
      LIMIT 1) answer,
-     Tracks
-WHERE Tracks.artist_id != answer.artist_id
+     Tracks,
+     ArtistTracks
+WHERE ArtistTracks.artist_id != answer.artist_id
+AND ArtistTracks.track_id = Tracks.track_id
 ORDER BY RAND()
 LIMIT 3
 """

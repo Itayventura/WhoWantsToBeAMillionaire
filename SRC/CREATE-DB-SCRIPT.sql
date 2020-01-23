@@ -31,12 +31,8 @@ CREATE TABLE Tracks (
 track_id INT UNSIGNED,
 track_name VARCHAR(100) NOT NULL,
 track_rating TINYINT,
-artist_id INT UNSIGNED,
-album_id INT UNSIGNED,
 lyrics TEXT,
-PRIMARY KEY (track_id),
-FOREIGN KEY (artist_id) REFERENCES Artists(artist_id),
-FOREIGN KEY (album_id) REFERENCES Albums(album_id)
+PRIMARY KEY (track_id)
 );
 
 CREATE TABLE TracksGenres (

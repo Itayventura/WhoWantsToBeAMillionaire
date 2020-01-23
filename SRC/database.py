@@ -106,7 +106,7 @@ class Database:
             data = self.cursor.fetchall()
             sentence = self.get_sentence_from_lyrics(data[0][0])
         # remove special characters from lyrics to apply correct logic
-        re.sub(r'\?|\.|,|;|\"|:', '', data[0][0])
+        data[0][0] = re.sub(r'\?|\.|,|;|\"|:', '', data[0][0])
         sentence, missing_word = self.get_word_and_sentence_without_the_word(sentence)
         wrong_answers = self.get_3_wrong_missing_words(data[0][0], missing_word)
         # return correct_answer, [wrong_answers], sentence_to_fill
