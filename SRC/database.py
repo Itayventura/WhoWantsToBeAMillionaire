@@ -2,9 +2,8 @@ import mysql.connector
 import sql_queries
 import random
 import re
-from datetime import datetime
 import json
-
+from datetime import datetime
 from constants import *
 
 

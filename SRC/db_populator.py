@@ -1,7 +1,5 @@
 import mysql.connector
-
 from constants import *
-
 
 class DatabasePopulator:
     def __init__(self):
