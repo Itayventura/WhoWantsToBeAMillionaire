@@ -4,8 +4,6 @@ from flask import Flask, render_template, jsonify, request, session, redirect
 from database import Database
 from constants import *
 
-from SRC.constants import QUESTION_SONG_CONTAINS_WORDS
-
 app = Flask(__name__)
 app.secret_key = 't3mp_k3y'
 service_port = 40004
@@ -224,6 +222,7 @@ def year_of_birth_of_specific_artist():
     # print(answers)
     return answers, correct_answer_number
 
+
 def song_that_contains_a_word():
     correct_answer, wrong_answers, word_in_song = db.get_song_that_contain_a_word_from_list_of_words()
     question = QUESTION_SONG_CONTAINS_WORDS.format(word=word_in_song)
@@ -231,8 +230,8 @@ def song_that_contains_a_word():
     answers['win'] = 'false'
     answers['correct'] = 'true'
     answers['question'] = question
-    print("answer:")
-    print(answers)
+    # print("answer:")
+    # print(answers)
     return answers, correct_answer_number
 
 

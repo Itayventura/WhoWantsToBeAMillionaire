@@ -106,9 +106,9 @@ class Database:
             data = self.cursor.fetchall()
             sentence = self.get_sentence_from_lyrics(data[0][0])
         # remove special characters from lyrics to apply correct logic
-        data[0][0] = re.sub(r'\?|\.|,|;|\"|:', '', data[0][0])
+        lyrics_without_special_chars = re.sub(r'\?|\.|,|;|\"|:', '', data[0][0])
         sentence, missing_word = self.get_word_and_sentence_without_the_word(sentence)
-        wrong_answers = self.get_3_wrong_missing_words(data[0][0], missing_word)
+        wrong_answers = self.get_3_wrong_missing_words(lyrics_without_special_chars, missing_word)
         # return correct_answer, [wrong_answers], sentence_to_fill
         return missing_word, wrong_answers, sentence
 
@@ -131,7 +131,7 @@ class Database:
 
     def get_sentence_from_lyrics(self, lyrics):
         sentences = lyrics.splitlines()
-        print(sentences)
+        # print(sentences)
         for sentence in sentences:
             if not sentence:
                 continue
@@ -152,7 +152,7 @@ class Database:
     def get_first_released_album_out_of_four(self):
         data = []
         while len(data) == 0:
-            self.cursor.execute(sql_queries.get_the_most_rated_artist)
+            self.cursor.execute(sql_queries.get_first_released_album_out_of_four)
             data = self.cursor.fetchall()
         # return correct_answer, [wrong_answers]
         return data[0][0], [data[i][1] for i in range(0, len(data))]
