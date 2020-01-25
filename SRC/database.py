@@ -105,12 +105,8 @@ class Database:
         return data[0][0], [data[i][0] for i in range(1, len(data))], decades[0]
 
     def get_highest_rated_artist_without_movie_tracks(self):
-        is_data_ok = False
-        data = []
-        while not is_data_ok:
-            self.cursor.execute(sql_queries.get_highest_rated_artist_without_movie_tracks)
-            data = self.cursor.fetchall()
-            is_data_ok = all([artist[1] is not None for artist in data])
+        self.cursor.execute(sql_queries.get_highest_rated_artist_without_movie_tracks)
+        data = self.cursor.fetchall()
         # return correct_answer, [wrong_answers]
         return data[0][1], [data[i][1] for i in range(1, len(data))]
 
