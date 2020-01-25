@@ -199,7 +199,6 @@ get_random_track_lyrics = """
 SELECT Tracks.track_name, Artists.artist_name, Tracks.lyrics
 FROM Tracks, Artists
 WHERE Tracks.lyrics IS NOT NULL
-AND Tracks.lyrics != '(instumental)'
 AND Tracks.artist_id = Artists.artist_id
 ORDER BY RAND()
 LIMIT 1
