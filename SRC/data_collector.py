@@ -3,11 +3,11 @@ import hashlib
 import json
 import re
 from bs4 import BeautifulSoup
-from db_populator import DatabasePopulator
+from database import Database
 from datetime import datetime
 from constants import *
 
-dbp = DatabasePopulator()
+database = Database()
 
 """ HELPER FUNCTIONS """
 
@@ -134,7 +134,7 @@ def collect_genres():
         for entry in json_data.get('message', {}).get('body', {}).get('music_genre_list', []):
             genre_id = entry.get('music_genre', {}).get('music_genre_id')
             genre_name = entry.get('music_genre', {}).get('music_genre_name')
-            dbp.insert_row(GENRES, [genre_id, genre_name])
+            database.insert_row(GENRES, [genre_id, genre_name])
 
 
 def get_track_movies(track_id, track_name, artist_name):
@@ -166,8 +166,8 @@ def get_track_movies(track_id, track_name, artist_name):
                 movie_uid_list.append(movie_uid)
 
             for movie_uid, movie_name in zip(movie_uid_list, movie_name_list):
-                dbp.insert_row(MOVIES, [movie_uid, movie_name])
-                dbp.insert_row(MOVIE_TRACKS, [track_id, movie_uid])
+                database.insert_row(MOVIES, [movie_uid, movie_name])
+                database.insert_row(MOVIE_TRACKS, [track_id, movie_uid])
 
 
 def get_track_genres(track_data):
@@ -178,7 +178,7 @@ def get_track_genres(track_data):
     for elem in track_genre_list:
         genre_id = elem['music_genre']['music_genre_id']
         values = [track_data['track_id'], genre_id]
-        dbp.insert_row(TRACKS_GENRES, values)
+        database.insert_row(TRACKS_GENRES, values)
 
 
 def add_track_entry(track_data, album_id, artist_id, added_tracks):
@@ -195,14 +195,13 @@ def add_track_entry(track_data, album_id, artist_id, added_tracks):
         track_rating = track_data.get('track_rating', -1)
         artist_name = track_data.get('artist_name', '')
         track_lyrics = get_track_lyrics(track_name, artist_name)
-        values = [track_id, track_name, track_rating, track_lyrics]
-        dbp.insert_row(TRACKS, values)
+        values = [track_id, track_name, track_rating, track_lyrics, artist_id]
+        database.insert_row(TRACKS, values)
         get_track_movies(track_id, track_name, artist_name)
         get_track_genres(track_data)
     else:
         track_id = added_tracks[filtered_track_name]
-    dbp.insert_row(ALBUM_TRACKS, [track_id, album_id])
-    dbp.insert_row(ARTIST_TRACKS, [track_id, artist_id])
+    database.insert_row(ALBUM_TRACKS, [track_id, album_id])
 
 
 def add_album_tracks(album_id, artist_id, added_tracks):
@@ -236,9 +235,8 @@ def add_album_entry(album_data, artist_id, added_tracks):
     album_name = album_data.get('album_name', '')
     release_date = parse_date(album_data.get('album_release_date', '0000'))
     # enter the album entry to the ALBUMS table
-    values = [album_id, album_name, release_date]
-    dbp.insert_row(ALBUMS, values)
-    dbp.insert_row(ARTIST_ALBUMS, [album_id, artist_id])
+    values = [album_id, album_name, release_date, artist_id]
+    database.insert_row(ALBUMS, values)
     add_album_tracks(album_id, artist_id, added_tracks)
 
 
@@ -253,7 +251,7 @@ def add_artist_entry(artist_data, artist_id):
     birth = parse_date(artist_data.get('life-span', {}).get('begin', '0000'))
     death = parse_date(artist_data.get('life-span', {}).get('end', '0000'))
     values = [artist_id, artist_name, artist_type, artist_rating, birth, death]
-    dbp.insert_row(ARTISTS, values)
+    database.insert_row(ARTISTS, values)
 
 
 def add_all_artist_albums(musixmatch_artist_id):
@@ -320,6 +318,6 @@ def get_artists(limit, offset):
 
 # collect_genres()
 
-for i in range(0, 400):
+for i in range(400, 800):
     get_artists(limit=50, offset=i*50)
 print("success")

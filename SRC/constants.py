@@ -16,8 +16,6 @@ ARTISTS = 'Artists'
 MOVIES = 'Movies'
 GENRES = 'Genres'
 ALBUM_TRACKS = 'AlbumTracks'
-ARTIST_ALBUMS = 'ArtistAlbums'
-ARTIST_TRACKS = 'ArtistTracks'
 MOVIE_TRACKS = 'MovieTracks'
 TRACKS_GENRES = 'TracksGenres'
 
@@ -42,7 +40,7 @@ QUESTION_ARTIST_WITH_ALBUM_WITH_LOVE_SONG = 'Which of the following artists has 
                                             'that has a track which contains the word \'love\'?'
 QUESTION_HIGHEST_RATED_ARTIST_WITHOUT_MOVIE_TRACKS = 'Which of the following is the highest rated artist ' \
                                                      'that his tracks have not been played in any movie?'
-QUESTION_FILL_THE_MISSING_WORD = 'Fill the missing word of the following sentence: \'{sentence}\''
+QUESTION_FILL_THE_MISSING_WORD = 'Complete the following line from \'{track}\' by {artist}: \'{sentence}\''
 QUESTION_MOST_RATED_ARTIST = 'Which of the following is the most highly rated artist?'
 QUESTION_FIRST_RELEASED_ALBUM = 'Which of the following albums was the first to be released?'
 QUESTION_TRACK_IN_SPECIFIC_MOVIE = 'What track is played in the movie \'{movie}\'?'

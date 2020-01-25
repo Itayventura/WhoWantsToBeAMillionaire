@@ -81,7 +81,7 @@ def artist_with_more_albums_than_avg():
     data['win'] = 'false'
     data['correct'] = 'true'
     data['question'] = question
-    return answers, correct_answer_key
+    return data, correct_answer_key
 
 
 def avg_tracks_for_artist_albums():
@@ -162,12 +162,12 @@ def highest_rated_artist_without_movie_tracks():
 
 def sentence_to_fill_with_missing_word():
     """ This function creates the data for the question:
-        'Fill the missing word of the following sentence: <A_RANDOM_TRACK'S_RANDOM_SENTENCE_WITH_MISSING_WORD>'
+        'Complete the following line from <RANDOM TRACK> by <ARTIST>: <RANDOM_SENTENCE_WITH_MISSING_WORD>'
     :return: 1. (dict) The question data.
              2. (str) The key of the correct answer in data dict.
     """
-    correct_answer, wrong_answers, sentence = db.get_sentence_to_fill_with_missing_word()
-    question = QUESTION_FILL_THE_MISSING_WORD.format(sentence=sentence)
+    correct_answer, wrong_answers, sentence, track_name, artist_name = db.get_sentence_to_fill_with_missing_word()
+    question = QUESTION_FILL_THE_MISSING_WORD.format(track=track_name, artist=artist_name, sentence=sentence)
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
     data['win'] = 'false'
     data['correct'] = 'true'
