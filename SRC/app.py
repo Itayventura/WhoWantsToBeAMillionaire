@@ -162,7 +162,7 @@ def highest_rated_artist_without_movie_tracks():
 
 def sentence_to_fill_with_missing_word():
     """ This function creates the data for the question:
-        'Fill the missing word of the following sentence: <A_RANDOM_TRACK'S_RANDOM_SENTENCE_WITH_MISSING_WORD>'
+        'Complete the following line from <RANDOM TRACK> by <ARTIST>: <RANDOM_SENTENCE_WITH_MISSING_WORD>'
     :return: 1. (dict) The question data.
              2. (str) The key of the correct answer in data dict.
     """
