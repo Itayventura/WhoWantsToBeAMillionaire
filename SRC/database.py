@@ -218,7 +218,7 @@ class Database:
         return dates
 
     def get_song_that_contain_a_word_from_list_of_words(self):
-        words = ["sky", "sea", "vacation", "beach", "europe"]
+        words = ["sky", "sea", "vacation", "beach", "europe", "girl", "boy", "green", "blue", "wife", "dog", "America", "flower", "grass", "baby", "people"]
         word = random.choice(words)
         data = []
         while len(data) < 4:
