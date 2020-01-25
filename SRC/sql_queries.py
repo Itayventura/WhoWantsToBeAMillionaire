@@ -37,16 +37,15 @@ FROM
     (SELECT COUNT(AlbumTracks.track_id) AS num,
             rand_artist.artist_name AS artist_name
      FROM
-         (SELECT artist_id,
+         (SELECT Artists.artist_id,
                  artist_name
-          FROM Artists
+          FROM Artists, Albums
+          WHERE Artists.artist_id = Albums.artist_id
           ORDER BY RAND()
-          LIMIT 1) AS rand_artist,
-          Albums,
-          AlbumTracks
-     WHERE Albums.album_id = AlbumTracks.album_id
-         AND rand_artist.artist_id = Albums.artist_id
-     GROUP BY Albums.album_id) AS tracks_count
+          LIMIT 1) AS rand_artist
+          LEFT JOIN Albums ON rand_artist.artist_id = Albums.artist_id
+          LEFT JOIN AlbumTracks ON Albums.album_id = AlbumTracks.album_id
+     GROUP BY Albums.album_id, artist_name) AS tracks_count
 GROUP BY tracks_count.artist_name
 """
 
@@ -136,7 +135,6 @@ UNION
      LIMIT 3)
 """
 
-# TODO: TEST!
 get_artist_with_album_released_in_specific_decade_with_love_song = """
     (SELECT Artists.artist_name
      FROM Artists

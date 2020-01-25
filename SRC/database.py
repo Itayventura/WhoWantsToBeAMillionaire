@@ -43,14 +43,9 @@ class Database:
         return data[0][0], [data[i][0] for i in range(1, len(data))]
 
     def get_avg_tracks_for_artist_albums(self):
-        data = []
-        avg_track_in_album = 0
-        while not avg_track_in_album:
-            self.cursor.execute(sql_queries.get_avg_tracks_for_artist_albums)
-            data = self.cursor.fetchall()
-            if not data:
-                continue
-            avg_track_in_album = data[0][0]
+        self.cursor.execute(sql_queries.get_avg_tracks_for_artist_albums)
+        data = self.cursor.fetchall()
+        avg_track_in_album = data[0][0]
         avg_track_in_album = round(float(avg_track_in_album), 1)
         # return avg(tracks_count_in_album), 3 wrong answers, artist_name
         return avg_track_in_album, self.generate_3_random_numbers(avg_track_in_album), data[0][1]
