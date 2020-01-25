@@ -1,3 +1,5 @@
+'''------------------------COMPLEX QUERIES-------------------------'''
+
 get_artist_with_more_albums_than_avg = """
 (SELECT Artists.artist_name
      FROM Artists,
@@ -197,14 +199,15 @@ FROM
 ORDER BY artist_rating DESC
 """
 
-'''------------------------simple queires-------------------------'''
+'''------------------------SIMPLE QUERIES-------------------------'''
 
 get_random_track_lyrics = """
-SELECT Tracks.lyrics
-FROM Tracks
-GROUP BY lyrics
-HAVING lyrics IS NOT NULL
-AND lyrics != '(instumental)'
+SELECT Tracks.track_name, Artists.artist_name, Tracks.lyrics
+FROM Tracks, Artists, ArtistTracks
+WHERE Tracks.lyrics IS NOT NULL
+AND Tracks.lyrics != '(instumental)'
+AND Tracks.track_id = ArtistTracks.track_id
+AND ArtistTracks.artist_id = Artists.artist_id
 ORDER BY RAND()
 LIMIT 1
 """

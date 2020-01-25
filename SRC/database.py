@@ -8,6 +8,12 @@ from constants import *
 
 
 class Database:
+    """
+    A class used to connect and interact with a MySQL database.
+    Attributes:
+        cnx: The MySQL connection object.
+        cursor: The MySQL cursor object which interacts with the MySQL server.
+    """
     def __init__(self):
         self.cnx = mysql.connector.connect(user=DB_USERNAME,
                                            password=DB_PASSWORD,
@@ -16,23 +22,28 @@ class Database:
                                            port=DB_PORT)
         self.cursor = self.cnx.cursor()
 
-    def organized_results(self):
-        field_names = [i[0] for i in self.cursor.description]
-        data = self.cursor.fetchall()
-        if len(data) == 1:
-            return dict(zip(field_names, data[0]))
-        ret = []
-        for row in data:
-            ret.append(dict(zip(field_names, row)))
-        return ret
+    def insert_row(self, table_name, values):
+        """ This function inserts a record into a table in our database.
+        :param table_name: (str) The table name.
+        :param values: (list) The record data.
+        """
+        input_values = ', '.join(map(lambda x: "%s", values))
+        sql_query = f'INSERT INTO `%s` VALUES (%s)' % (table_name, input_values)
+        try:
+            self.cursor.execute(sql_query, tuple(values))
+            self.cnx.commit()
+        except Exception as ex:
+            print(ex)
+            self.cnx.rollback()
 
     def get_artist_with_more_albums_than_avg(self):
         self.cursor.execute(sql_queries.get_artist_with_more_albums_than_avg)
         data = self.cursor.fetchall()
-        # return: correct_answer, [wrong_answers]
+        # return correct_answer, [wrong_answers]
         return data[0][0], [data[i][0] for i in range(1, len(data))]
 
     def get_avg_tracks_for_artist_albums(self):
+        data = []
         avg_track_in_album = 0
         while not avg_track_in_album:
             self.cursor.execute(sql_queries.get_avg_tracks_for_artist_albums)
@@ -40,14 +51,18 @@ class Database:
             if not data:
                 continue
             avg_track_in_album = data[0][0]
-        avg_track_in_album = round(float(avg_track_in_album), 2)
-        # return: avg(tracks_count_in_album), 3 wrong answers, artist_name
+        avg_track_in_album = round(float(avg_track_in_album), 1)
+        # return avg(tracks_count_in_album), 3 wrong answers, artist_name
         return avg_track_in_album, self.generate_3_random_numbers(avg_track_in_album), data[0][1]
 
     def generate_3_random_numbers(self, avg_num):
+        """
+        :param avg_num: Correct answer for get_avg_tracks_for_artist_albums()
+        :return: Three random different answers
+        """
         random_nums = set([])
         while len(random_nums) < 3:
-            random1 = round(random.uniform(4.0, 20.0), 2)
+            random1 = round(random.uniform(4.0, 20.0), 1)
             if random1 != avg_num and random1 not in random_nums:
                 random_nums.add(random1)
         return list(random_nums)
@@ -62,6 +77,7 @@ class Database:
 
     def get_artist_with_mainly_tracks_from_specific_genre(self):
         data = []
+        genre_name = None
         while len(data) < 4:
             genre_id, genre_name = self.generate_random_genre()
             self.cursor.execute(sql_queries.get_artist_with_mainly_tracks_from_specific_genre % (genre_id, genre_id))
@@ -82,7 +98,8 @@ class Database:
             random.shuffle(decades)
             decade_start = datetime(decades[0], 1, 1)
             decade_end = datetime(decades[0] + 10, 1, 1)
-            self.cursor.execute(sql_queries.get_artist_with_album_released_in_specific_decade_with_love_song, (decade_start, decade_end, decade_start, decade_end))
+            self.cursor.execute(sql_queries.get_artist_with_album_released_in_specific_decade_with_love_song,
+                                (decade_start, decade_end, decade_start, decade_end))
             data = self.cursor.fetchall()
         # return correct_answer, [wrong_answers], decade
         return data[0][0], [data[i][0] for i in range(1, len(data))], decades[0]
@@ -100,16 +117,20 @@ class Database:
     def get_sentence_to_fill_with_missing_word(self):
         data = []
         sentence = None
+        track_name = None
+        artist_name = None
         while not sentence:
             self.cursor.execute(sql_queries.get_random_track_lyrics)
             data = self.cursor.fetchall()
-            sentence = self.get_sentence_from_lyrics(data[0][0])
+            track_name = data[0][0]
+            artist_name = data[0][1]
+            sentence = self.get_sentence_from_lyrics(data[0][2])
         # remove special characters from lyrics to apply correct logic
-        lyrics_without_special_chars = re.sub(r'\?|\.|,|;|\"|:', '', data[0][0])
+        lyrics_without_special_chars = re.sub(r'\?|\.|,|;|\"|:', '', data[0][2])
         sentence, missing_word = self.get_word_and_sentence_without_the_word(sentence)
         wrong_answers = self.get_3_wrong_missing_words(lyrics_without_special_chars, missing_word)
         # return correct_answer, [wrong_answers], sentence_to_fill
-        return missing_word, wrong_answers, sentence
+        return missing_word, wrong_answers, sentence, track_name, artist_name
 
     def get_3_wrong_missing_words(self, lyrics, missing_word):
         split_lyrics = lyrics.split()
@@ -130,13 +151,11 @@ class Database:
 
     def get_sentence_from_lyrics(self, lyrics):
         sentences = lyrics.splitlines()
-        # print(sentences)
         for sentence in sentences:
             if not sentence:
                 continue
             split_sentence = sentence.split()
             if len(split_sentence) >= 3:
-                print(sentence)
                 return sentence
         return None
 
