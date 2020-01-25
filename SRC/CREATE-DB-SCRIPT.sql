@@ -24,7 +24,9 @@ CREATE TABLE Albums (
 album_id INT UNSIGNED,
 album_name VARCHAR(100) NOT NULL,
 release_date DATE,
-PRIMARY KEY (album_id)
+artist_id INT UNSIGNED,
+PRIMARY KEY (album_id),
+FOREIGN KEY (artist_id) REFERENCES Artists(artist_id)
 );
 
 CREATE TABLE Tracks (
@@ -32,7 +34,9 @@ track_id INT UNSIGNED,
 track_name VARCHAR(100) NOT NULL,
 track_rating TINYINT,
 lyrics TEXT,
-PRIMARY KEY (track_id)
+artist_id INT UNSIGNED,
+PRIMARY KEY (track_id),
+FOREIGN KEY (artist_id) REFERENCES Artists(artist_id)
 );
 
 CREATE TABLE TracksGenres (
@@ -49,22 +53,6 @@ album_id INT UNSIGNED,
 PRIMARY KEY (track_id),
 FOREIGN KEY (track_id) REFERENCES Tracks(track_id),
 FOREIGN KEY (album_id) REFERENCES Albums(album_id)
-);
-
-CREATE TABLE ArtistAlbums (
-album_id INT UNSIGNED,
-artist_id INT UNSIGNED,
-PRIMARY KEY (album_id),
-FOREIGN KEY (album_id) REFERENCES Albums(album_id),
-FOREIGN KEY (artist_id) REFERENCES Artists(artist_id)
-);
-
-CREATE TABLE ArtistTracks (
-track_id INT UNSIGNED,
-artist_id INT UNSIGNED,
-PRIMARY KEY (track_id),
-FOREIGN KEY (track_id) REFERENCES Tracks(track_id),
-FOREIGN KEY (artist_id) REFERENCES Artists(artist_id)
 );
 
 CREATE TABLE MovieTracks (

@@ -195,14 +195,13 @@ def add_track_entry(track_data, album_id, artist_id, added_tracks):
         track_rating = track_data.get('track_rating', -1)
         artist_name = track_data.get('artist_name', '')
         track_lyrics = get_track_lyrics(track_name, artist_name)
-        values = [track_id, track_name, track_rating, track_lyrics]
+        values = [track_id, track_name, track_rating, track_lyrics, artist_id]
         database.insert_row(TRACKS, values)
         get_track_movies(track_id, track_name, artist_name)
         get_track_genres(track_data)
     else:
         track_id = added_tracks[filtered_track_name]
     database.insert_row(ALBUM_TRACKS, [track_id, album_id])
-    database.insert_row(ARTIST_TRACKS, [track_id, artist_id])
 
 
 def add_album_tracks(album_id, artist_id, added_tracks):
@@ -236,9 +235,8 @@ def add_album_entry(album_data, artist_id, added_tracks):
     album_name = album_data.get('album_name', '')
     release_date = parse_date(album_data.get('album_release_date', '0000'))
     # enter the album entry to the ALBUMS table
-    values = [album_id, album_name, release_date]
+    values = [album_id, album_name, release_date, artist_id]
     database.insert_row(ALBUMS, values)
-    database.insert_row(ARTIST_ALBUMS, [album_id, artist_id])
     add_album_tracks(album_id, artist_id, added_tracks)
 
 
@@ -320,6 +318,6 @@ def get_artists(limit, offset):
 
 # collect_genres()
 
-for i in range(0, 400):
+for i in range(400, 800):
     get_artists(limit=50, offset=i*50)
 print("success")

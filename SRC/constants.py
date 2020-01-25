@@ -16,8 +16,6 @@ ARTISTS = 'Artists'
 MOVIES = 'Movies'
 GENRES = 'Genres'
 ALBUM_TRACKS = 'AlbumTracks'
-ARTIST_ALBUMS = 'ArtistAlbums'
-ARTIST_TRACKS = 'ArtistTracks'
 MOVIE_TRACKS = 'MovieTracks'
 TRACKS_GENRES = 'TracksGenres'
 

@@ -3,28 +3,28 @@
 get_artist_with_more_albums_than_avg = """
 (SELECT Artists.artist_name
      FROM Artists,
-          ArtistAlbums
-     WHERE ArtistAlbums.artist_id = Artists.artist_id
+          Albums
+     WHERE Albums.artist_id = Artists.artist_id
      GROUP BY Artists.artist_id
-     HAVING COUNT(DISTINCT ArtistAlbums.album_id) >
+     HAVING COUNT(DISTINCT Albums.album_id) >
          (SELECT AVG(nested.`count`)
           FROM
               (SELECT COUNT(DISTINCT album_id) AS `count`
-               FROM ArtistAlbums
+               FROM Albums
                GROUP BY artist_id) AS nested)
      ORDER BY RAND()
      LIMIT 1)
 UNION
     (SELECT Artists.artist_name
      FROM Artists,
-          ArtistAlbums
-     WHERE ArtistAlbums.artist_id = Artists.artist_id
+          Albums
+     WHERE Albums.artist_id = Artists.artist_id
      GROUP BY Artists.artist_id
-     HAVING COUNT(DISTINCT ArtistAlbums.album_id) <=
+     HAVING COUNT(DISTINCT Albums.album_id) <=
          (SELECT AVG(nested.`count`)
           FROM
               (SELECT COUNT(DISTINCT album_id) AS `count`
-               FROM ArtistAlbums
+               FROM Albums
                GROUP BY artist_id) AS nested)
      ORDER BY RAND()
      LIMIT 3)
@@ -42,11 +42,11 @@ FROM
           FROM Artists
           ORDER BY RAND()
           LIMIT 1) AS rand_artist,
-          ArtistAlbums,
+          Albums,
           AlbumTracks
-     WHERE ArtistAlbums.album_id = AlbumTracks.album_id
-         AND rand_artist.artist_id = ArtistAlbums.artist_id
-     GROUP BY ArtistAlbums.album_id) AS tracks_count
+     WHERE Albums.album_id = AlbumTracks.album_id
+         AND rand_artist.artist_id = Albums.artist_id
+     GROUP BY Albums.album_id) AS tracks_count
 GROUP BY tracks_count.artist_name
 """
 
@@ -90,23 +90,23 @@ LIMIT 1
 """
 
 get_artist_with_mainly_tracks_from_specific_genre = """
-    (SELECT artist_name
+        (SELECT artist_name
      FROM Artists
      WHERE EXISTS
              (SELECT DISTINCT 1
               FROM
-                  (SELECT ArtistTracks.artist_id,
-                          COUNT(ArtistTracks.track_id) AS num
+                  (SELECT Tracks.artist_id,
+                          COUNT(Tracks.track_id) AS num
                    FROM TracksGenres,
-                        ArtistTracks
-                   WHERE ArtistTracks.track_id = TracksGenres.track_id
+                        Tracks
+                   WHERE Tracks.track_id = TracksGenres.track_id
                        AND TracksGenres.genre_id = '%s'
-                   GROUP BY ArtistTracks.artist_id) AS total_pop_count_for_artist,
+                   GROUP BY Tracks.artist_id) AS total_pop_count_for_artist,
 
-                  (SELECT ArtistTracks.artist_id,
-                          COUNT(ArtistTracks.track_id) AS num
-                   FROM ArtistTracks
-                   GROUP BY ArtistTracks.artist_id) AS total_tracks_count_for_artist
+                  (SELECT Tracks.artist_id,
+                          COUNT(Tracks.track_id) AS num
+                   FROM Tracks
+                   GROUP BY Tracks.artist_id) AS total_tracks_count_for_artist
               WHERE Artists.artist_id = total_pop_count_for_artist.artist_id
                   AND total_pop_count_for_artist.artist_id = total_tracks_count_for_artist.artist_id
                   AND total_pop_count_for_artist.num > 0.5 * total_tracks_count_for_artist.num)
@@ -118,18 +118,17 @@ UNION
      WHERE NOT EXISTS
              (SELECT DISTINCT 1
               FROM
-                  (SELECT ArtistTracks.artist_id,
-                          COUNT(ArtistTracks.track_id) AS num
-                   FROM TracksGenres,
-                        ArtistTracks
-                   WHERE ArtistTracks.track_id = TracksGenres.track_id
+                  (SELECT Tracks.artist_id,
+                          COUNT(Tracks.track_id) AS num
+                   FROM TracksGenres, Tracks
+                   WHERE Tracks.track_id = TracksGenres.track_id
                        AND TracksGenres.genre_id = '%s'
-                   GROUP BY ArtistTracks.artist_id) AS total_pop_count_for_artist,
+                   GROUP BY Tracks.artist_id) AS total_pop_count_for_artist,
 
-                  (SELECT ArtistTracks.artist_id,
-                          COUNT(ArtistTracks.track_id) AS num
-                   FROM ArtistTracks
-                   GROUP BY ArtistTracks.artist_id) AS total_tracks_count_for_artist
+                  (SELECT Tracks.artist_id,
+                          COUNT(Tracks.track_id) AS num
+                   FROM Tracks
+                   GROUP BY Tracks.artist_id) AS total_tracks_count_for_artist
               WHERE Artists.artist_id = total_pop_count_for_artist.artist_id
                   AND total_pop_count_for_artist.artist_id = total_tracks_count_for_artist.artist_id
                   AND total_pop_count_for_artist.num > 0.5 * total_tracks_count_for_artist.num)
@@ -137,15 +136,14 @@ UNION
      LIMIT 3)
 """
 
+# TODO: TEST!
 get_artist_with_album_released_in_specific_decade_with_love_song = """
     (SELECT Artists.artist_name
      FROM Artists
      WHERE artist_id = ANY
-             (SELECT ArtistAlbums.artist_id
-              FROM ArtistAlbums,
-                   Albums
-              WHERE ArtistAlbums.album_id = Albums.album_id
-                  AND Albums.release_date >= %s
+             (SELECT Albums.artist_id
+              FROM Albums
+              WHERE Albums.release_date >= %s
                   AND Albums.release_date < %s
                   AND Albums.album_id = ANY
                       (SELECT AlbumTracks.album_id
@@ -159,11 +157,9 @@ UNION
     (SELECT Artists.artist_name
      FROM Artists
      WHERE artist_id = ANY
-             (SELECT ArtistAlbums.artist_id
-              FROM ArtistAlbums,
-                   Albums
-              WHERE ArtistAlbums.album_id = Albums.album_id
-                  AND Albums.release_date >= %s
+             (SELECT Albums.artist_id
+              FROM Albums
+              WHERE Albums.release_date >= %s
                   AND Albums.release_date < %s
                   AND Albums.album_id != ANY
                       (SELECT AlbumTracks.album_id
@@ -175,6 +171,7 @@ UNION
      LIMIT 3)
 """
 
+# TODO: FIX!
 get_highest_rated_artist_without_movie_tracks = """
 SELECT *
 FROM
@@ -185,9 +182,9 @@ FROM
           WHERE NOT EXISTS
                   (SELECT 1
                    FROM MovieTracks,
-                        ArtistTracks
-                   WHERE Artists.artist_id = ArtistTracks.artist_id
-                       AND MovieTracks.track_id = ArtistTracks.track_id)
+                        Tracks
+                   WHERE Artists.artist_id = Tracks.artist_id
+                       AND MovieTracks.track_id = Tracks.track_id)
               AND Artists.artist_rating = ratings.artist_rating
           ORDER BY rand()
           LIMIT 1) AS artist_name
@@ -203,11 +200,10 @@ ORDER BY artist_rating DESC
 
 get_random_track_lyrics = """
 SELECT Tracks.track_name, Artists.artist_name, Tracks.lyrics
-FROM Tracks, Artists, ArtistTracks
+FROM Tracks, Artists
 WHERE Tracks.lyrics IS NOT NULL
 AND Tracks.lyrics != '(instumental)'
-AND Tracks.track_id = ArtistTracks.track_id
-AND ArtistTracks.artist_id = Artists.artist_id
+AND Tracks.artist_id = Artists.artist_id
 ORDER BY RAND()
 LIMIT 1
 """
@@ -301,19 +297,15 @@ SELECT answer.track_name,
        Tracks.track_name
 FROM
     (SELECT Tracks.track_name,
-            Artists.artist_name,
-            ArtistTracks.artist_id
+            Tracks.artist_id,
+            Artists.artist_name
      FROM Tracks,
-          Artists,
-          ArtistTracks
-     WHERE Artists.artist_id = ArtistTracks.artist_id
-     AND ArtistTracks.track_id = Tracks.track_id
+          Artists
+     WHERE Artists.artist_id = Tracks.artist_id
      ORDER BY RAND()
      LIMIT 1) answer,
-     Tracks,
-     ArtistTracks
-WHERE ArtistTracks.artist_id != answer.artist_id
-AND ArtistTracks.track_id = Tracks.track_id
+     Tracks
+WHERE Tracks.artist_id != answer.artist_id
 ORDER BY RAND()
 LIMIT 3
 """
