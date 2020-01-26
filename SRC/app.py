@@ -5,7 +5,7 @@ from constants import *
 
 app = Flask(__name__)
 app.secret_key = 't3mp_k3y'
-service_port = 40004
+service_port = 40005
 db = Database()
 
 
@@ -30,31 +30,68 @@ def generate_question():
     random.shuffle(questions_list)
     return questions_list[0]()
 
+###############
+# route funcs #
+###############
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
-        session['number'] = 0
+        session['number'] = 1
         session['question_number'] = 1
-        session['target'] = 70
+        session['target'] = 2
         data, session['correct'] = generate_question()
-        return render_template('index.html', **data)
+        print(session['correct'])
+        return render_template('template.html', **data)
     else:
         req_data = request.get_data().decode('utf-8')
         last_correct = session['correct']
         session['question_number'] += 1
         data, session['correct'] = generate_question()
+        print(session['correct'])
         data['correct'] = 'false'
         data['win'] = 'false'
         if last_correct == req_data:
             data['correct'] = 'true'
             session['number'] += 1
-            if session['number'] == session['target']:
+            if session['number'] >= session['target']:
                 data['win'] = 'true'
+            data['number'] = session['number']
             return jsonify(**data)
         return jsonify(**data)
 
+@app.route('/new_game', methods=['POST'])
+def new_game():
+    session['number'] = 1
+    data, session['correct'] = generate_question()
+    data['number'] = session['number']
+    print(session['correct'])
+    return jsonify(**data)
 
+@app.route('/level', methods=['POST'])
+def level():
+    l = request.get_data().decode('utf-8')
+    session['level'] = l
+    if l == 'easy':
+        session['target'] = 2
+    if l == 'medium':
+        session['target'] = 4
+    if l == 'hard':
+        session['target'] = 7
+    return jsonify()
+
+@app.route('/topics', methods=['POST'])
+def topics():
+    req_data = request.get_data.decode('utf-8')
+    return jsonify()
+
+@app.route('/theme', methods=['POST'])
+def theme():
+    return jsonify()
+
+#############
+# route end #
+#############
 def shuffle_answers(wrong_answers, correct_answer):
     """ This function shuffles a question's four answers.
     :param wrong_answers: (list) A list of three wrong answers.
@@ -281,5 +318,5 @@ def song_that_contains_a_word():
 
 
 if __name__ == "__main__":
-    app.run(port=service_port, host="0.0.0.0", debug=False)
+    app.run(port=service_port, host="0.0.0.0", debug=True)
 

@@ -1,0 +1,24 @@
+div.start-menu
+{
+    position: relative;
+    background-color: rgb(58, 58, 112);
+    align-self: center;
+    align-content: center;
+    margin: auto;
+    margin-top: 5%;
+    padding: 70px 20px;
+    width: 247px;
+    border-radius: 10px;
+}
+
+nav
+{
+    text-align: left;
+    position: relative;
+    color: whitesmoke;
+    font-weight: bold;
+    background-color: black ;
+    margin: 0px 0px;
+    padding: 0.5em 0;
+    box-shadow: 0 1em 2em rgba(black, 0.5);
+}
