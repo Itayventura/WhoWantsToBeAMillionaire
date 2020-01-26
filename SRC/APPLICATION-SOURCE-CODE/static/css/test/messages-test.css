@@ -1,0 +1,12 @@
+span.message-test
+{
+    display: inline-block;
+    padding: 1.5em 9px;
+    width: 348px;
+    margin: 6px;
+    border-radius: 4px;
+    background-color: rgb(87, 87, 182);
+    box-shadow: none;
+    cursor: context-menu;
+    text-align: left;
+}

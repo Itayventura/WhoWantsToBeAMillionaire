@@ -1,0 +1,45 @@
+@import url(https://fonts.googleapis.com/css?family=Shadows+Into+Light);
+
+body.classic
+{
+    /*background-color: rgb(47, 47, 102);*/
+    background: linear-gradient(to right, #1f4037, #99f2c8);
+    color: aliceblue;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-top: 1em;
+}
+
+div.game-container-classic
+{
+    background-color: rgb(162, 189, 240);
+    border-radius: 2px;
+    margin: auto;
+    /*margin: 15vh calc(18vw - 1px);*/
+    height: auto;
+    width: 64vw;
+	min-height: 600px;
+	min-width: 800px;
+    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
+    padding-bottom: 15px;
+}
+
+div.game-header-classic
+{
+    text-align-last: left;
+    margin: 0px;
+    background-color: rgb(51, 51, 134);
+    padding: 0;
+    font-size: 22px;
+    border-radius: 2px 2px 0 0;
+    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
+    position: relative;
+    
+}
+
+span.x-fact-classic
+{
+    color: grey;
+    font-weight: bold;
+    font-family: Shadows into light;
+}

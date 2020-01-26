@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>X-FACT - play!</title>
+
+    {% include "css.html" %}
+    
+    <script src="{{ url_for('static', filename='js/globals.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/level.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/themes.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/topic.js') }}" onload="set_urls('{{ url_for("index")}}', '{{ url_for('level')}}', '{{url_for('topics')}}', '{{url_for('new_game')}}')"></script>
+
+
+</head>
+<body class="classic">
+    <div></div>
+    <div class="game-container-classic">
+        
+        <div class="game-header-classic">
+            <a class="classic logo" href="{{ url_for('index')}}">
+                <span class="x-fact-classic">The <strong>X-FACT</strong></span></a>
+            <a class="classic logo left" onclick="toggle_menu()">
+                <span class="x-fact-classic"><strong>MENU</strong></span></a>
+        </div>
+		
+        {% include "game.html" %}
+        {% include "menu.html" %}
+		{% include "instructions.html" %}
+		{% include "about.html" %}
+		{% include "level.html" %}
+		{% include "themes.html" %}
+		{% include "topics.html" %}
+		
+		{% include "game_over.html" %}
+
+    </div>
+</body>
+</html>

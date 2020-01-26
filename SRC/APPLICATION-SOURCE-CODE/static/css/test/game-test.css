@@ -1,0 +1,84 @@
+
+div.question-container-test
+{
+    margin: 10px 50px 30px 50px;
+    text-align: left;
+    background-color: rgb(64, 64, 175);
+    padding: 5px 12px;
+    font-size: 20px;
+    border-radius: 2px;
+    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
+}
+
+div.game-answers
+{
+    position: relative;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    border: 0;
+    border-radius: 2px;
+}
+
+span.answer-test
+{
+    font-family: 'Concert One', cursive;
+    font-weight: lighter;
+    text-align: left;
+    display: inline-block;
+    padding: 1.5em 9px;
+    width: 348px;
+    margin: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
+    background-color: rgb(87, 87, 182);
+}
+span.answer-test:hover
+{
+    box-shadow: none;
+}
+span.answer-test:active
+{
+    border: 1px solid rgb(18, 19, 19);
+}
+
+#timer
+{
+    position: relative;
+    float: right;
+}
+#friend
+{
+	display: none;
+	position: relative;
+    float: left;
+	padding: 1em;
+	background-color: brown;
+	border-radius: 2px;
+	font-weight: bold;
+	width: 7%;
+}
+#friend:hover
+{
+	/*box-shadow: 1px 1px 3px 0 rgb(18, 19, 19);*/
+	background-color: rgb(180, 130, 130);
+	cursor: pointer;
+}
+#seperator
+{
+	padding: 1em;
+	height: 1em;
+}
+.number-test
+{
+	/*display: none;*/
+	padding: 1em;
+    background-color: brown;
+    border-radius: 2px;
+	cursor: context-menu;
+}
+.current-test
+{
+	background-color: SandyBrown;
+}

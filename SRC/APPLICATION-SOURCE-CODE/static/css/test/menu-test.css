@@ -1,0 +1,35 @@
+
+div.page-name-test
+{
+    text-align: center;
+    background-color: rgb(64, 64, 175);
+    padding: 0.5em;
+    margin: 0 10vw;
+    border-radius: 2px;
+    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
+    font-size: 2em;
+    font-family: 'Concert One', cursive;
+    font-weight: bold;
+}
+
+div.menu-line-test
+{
+    position: relative;
+    text-align: center;
+    border-radius: 2px;
+	font-family: 'Concert One', cursive;
+	font-weight: bold;
+}
+
+span.menu-item-test
+{
+    display: inline-block;
+    padding: 1.5em 9px;
+    width: 348px;
+    margin: 6px;
+    border-radius: 4px;
+    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
+    background-color: rgb(87, 87, 182);
+
+}
+

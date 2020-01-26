@@ -1,0 +1,30 @@
+span.level-item-classic
+{
+    display: inline-block;
+    padding: 1.5em 9px;
+    width: 348px;
+    margin: 6px;
+    border-radius: 4px;
+    background-color: rgb(87, 87, 182);
+    box-shadow: none;
+    cursor: pointer;
+}
+span.level-item-classic:hover
+{
+    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
+    position: relative;
+    top: -2px;
+
+}
+span.level-item-classic:active
+{
+    border: 1px solid grey;
+}
+#easy
+{
+    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
+}
+.topic
+{
+    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
+}

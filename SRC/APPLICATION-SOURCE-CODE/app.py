@@ -8,6 +8,7 @@ app.secret_key = 't3mp_k3y'
 service_port = 40004
 db = Database()
 
+topic_sets = {'artist':{1,2,4,5,7, 11, 12}, 'albums':{1,2,8}, 'genres':{4}, 'movies':{3,5,9,10}, 'songs':{1,4,6,9,11,13}}
 
 def generate_question():
     """ This function chooses a random question and calls the method that generates the question's data.
@@ -27,34 +28,112 @@ def generate_question():
                       track_of_specific_artist,
                       year_of_birth_of_specific_artist,
                       song_that_contains_a_word]
-    random.shuffle(questions_list)
-    return questions_list[0]()
+    
+    if 'topics' not in session:
+        for i in range(14):
+            session['q_' + str(i)] = True
+        session['topics'] = True
 
+    options_set = []
+    for i, q in enumerate(questions_list):
+        if session['q_' + str(i)]:
+            options_set.append(i)
+    question = questions_list[random.sample(options_set, 1)[0]]
+    data, session['correct'] = question()
+    return data
+
+###############
+# route funcs #
+###############
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
-        session['number'] = 0
+        session['number'] = 1
         session['question_number'] = 1
-        session['target'] = 70
-        data, session['correct'] = generate_question()
-        return render_template('index.html', **data)
+        session['target'] = 6
+        session['mistakes'] = 0
+        session['max_mistakes'] = 3
+        if 'theme' not in session:
+            session['theme'] = 'classic'
+        
+        data = generate_question()
+        data['theme'] = session['theme']
+        data['target'] = session['target']
+        data['number'] = session['number']
+        print(session['correct'])
+        return render_template('template.html', **data)
     else:
+
+        if session['mistakes'] >= session['max_mistakes']:
+            data['lives'] = 0
+            return jsonify(**data)
+
         req_data = request.get_data().decode('utf-8')
         last_correct = session['correct']
         session['question_number'] += 1
-        data, session['correct'] = generate_question()
+        data = generate_question()
+        print(session['correct'])
         data['correct'] = 'false'
         data['win'] = 'false'
+        data['lives'] = session['max_mistakes'] - session['mistakes']
+        data['answer'] = last_correct
         if last_correct == req_data:
             data['correct'] = 'true'
             session['number'] += 1
-            if session['number'] == session['target']:
+            if session['number'] >= session['target']:
                 data['win'] = 'true'
+            data['number'] = session['number']
             return jsonify(**data)
+        else:
+            data['number'] = session['number']
+            session['mistakes'] += 1
+            data['lives'] -= 1
         return jsonify(**data)
 
+@app.route('/new_game', methods=['POST'])
+def new_game():
+    session['number'] = 1
+    session['mistakes'] = 0
+    data = generate_question()
+    data['number'] = session['number']
+    data['lives'] =session['max_mistakes']
+    print(session['correct'])
+    return jsonify(**data)
 
+@app.route('/level', methods=['POST'])
+def level():
+    l = request.get_data().decode('utf-8')
+    session['level'] = l
+    if l == 'easy':
+        session['max_mistakes'] = 3
+    if l == 'medium':
+        session['max_mistakes'] = 2
+    if l == 'hard':
+        session['max_mistakes'] = 1
+    return jsonify()
+
+@app.route('/topics', methods=['POST'])
+def topics():
+    req_data = request.get_data().decode('utf-8')
+    d = req_data.split(' ')
+    for i in topic_sets[d[0]]:
+        if d[1] == 'add':
+            session['q_' + str(i)] = True
+        else:
+            session['q_' + str(i)] = False
+    return jsonify()
+
+@app.route('/theme', methods=['POST'])
+def theme():
+    req_data = request.get_data().decode('utf-8')
+    if req_data in ['classic', 'simple', 'retro', 'dark', 'bright', 'Q']:
+        session['theme'] = req_data
+    return jsonify()
+
+#############
+# route end #
+#############
 def shuffle_answers(wrong_answers, correct_answer):
     """ This function shuffles a question's four answers.
     :param wrong_answers: (list) A list of three wrong answers.
@@ -78,8 +157,6 @@ def artist_with_more_albums_than_avg():
     question = QUESTION_ARTIST_WITH_MORE_ALBUMS_THAN_AVG
     correct_answer, wrong_answers = db.get_artist_with_more_albums_than_avg()
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -93,8 +170,6 @@ def avg_tracks_for_artist_albums():
     correct_answer, wrong_answers, artist_name = db.get_avg_tracks_for_artist_albums()
     question = QUESTION_AVG_TRACKS_IN_ALBUM_FOR_ARTIST.format(artist=artist_name)
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -108,8 +183,6 @@ def movie_with_most_played_tracks_in_genre():
     correct_answer, wrong_answers, genre_name = db.get_movie_with_most_played_tracks_in_genre()
     question = QUESTION_MOVIE_WITH_MOST_PLAYED_TRACKS_FROM_GENRE.format(genre=genre_name)
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -123,8 +196,6 @@ def artist_with_mainly_tracks_from_specific_genre():
     correct_answer, wrong_answers, genre_name = db.get_artist_with_mainly_tracks_from_specific_genre()
     question = QUESTION_ARTIST_WITH_MAINLY_TRACKS_FROM_SPECIFIC_GENRE.format(genre=genre_name)
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -139,8 +210,6 @@ def artist_with_album_released_in_specific_decade_with_love_song():
     correct_answer, wrong_answers, decade = db.get_artist_with_album_released_in_specific_decade_with_love_song()
     question = QUESTION_ARTIST_WITH_ALBUM_WITH_LOVE_SONG.format(decade=str(decade))
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -154,8 +223,6 @@ def highest_rated_artist_without_movie_tracks():
     question = QUESTION_HIGHEST_RATED_ARTIST_WITHOUT_MOVIE_TRACKS
     correct_answer, wrong_answers = db.get_highest_rated_artist_without_movie_tracks()
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -169,8 +236,6 @@ def sentence_to_fill_with_missing_word():
     correct_answer, wrong_answers, sentence, track_name, artist_name = db.get_sentence_to_fill_with_missing_word()
     question = QUESTION_FILL_THE_MISSING_WORD.format(track=track_name, artist=artist_name, sentence=sentence)
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -184,8 +249,6 @@ def the_most_rated_artist():
     correct_answer, wrong_answers = db.get_the_most_rated_artist()
     question = QUESTION_MOST_RATED_ARTIST
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -199,8 +262,6 @@ def first_released_album_out_of_four():
     correct_answer, wrong_answers = db.get_first_released_album_out_of_four()
     question = QUESTION_FIRST_RELEASED_ALBUM
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -214,8 +275,6 @@ def track_in_movie():
     correct_answer, wrong_answers, movie_name = db.get_track_in_movie()
     question = QUESTION_TRACK_IN_SPECIFIC_MOVIE.format(movie=movie_name)
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -229,8 +288,6 @@ def movie_without_track():
     correct_answer, wrong_answers, track_name = db.get_movie_without_track()
     question = QUESTION_MOVIE_WITHOUT_SPECIFIC_TRACK.format(track=track_name)
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -244,8 +301,6 @@ def track_of_specific_artist():
     correct_answer, wrong_answers, artist_name = db.get_track_of_specific_artist()
     question = QUESTION_TRACK_PLAYED_BY_SPECIFIC_ARTIST.format(artist=artist_name)
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -259,8 +314,6 @@ def year_of_birth_of_specific_artist():
     correct_answer, wrong_answers, artist_name = db.get_year_of_birth_of_specific_artist()
     question = QUESTION_SPECIFIC_ARTIST_DATE_OF_BIRTH.format(artist=artist_name)
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 
@@ -274,8 +327,6 @@ def song_that_contains_a_word():
     correct_answer, wrong_answers, word_in_song = db.get_song_that_contain_a_word_from_list_of_words()
     question = QUESTION_SONG_CONTAINS_WORDS.format(word=word_in_song)
     data, correct_answer_key = shuffle_answers(wrong_answers, correct_answer)
-    data['win'] = 'false'
-    data['correct'] = 'true'
     data['question'] = question
     return data, correct_answer_key
 

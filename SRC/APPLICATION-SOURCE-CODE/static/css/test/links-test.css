@@ -1,0 +1,15 @@
+a.test
+{
+    display: inline-block;
+	width: auto;
+	padding: 1em;
+	text-align: center;
+    cursor: pointer;
+    color: whitesmoke;
+    text-decoration: none;
+    border-radius: 2px;
+}
+a.test:hover
+{
+    color: gold;
+}
