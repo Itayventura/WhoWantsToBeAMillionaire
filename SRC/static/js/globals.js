@@ -9,6 +9,7 @@ var new_url;
 //state variables
 var time_length = 30;
 var current_answer;
+var mode = 'regular';
 
 //level.js
 var current_level = 'easy';

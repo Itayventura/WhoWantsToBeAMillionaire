@@ -80,6 +80,8 @@ div.page-name
 }
 span.answer
 {
+    font-family: Shadows into light;
+    font-weight: bold;
     text-align: left;
     display: inline-block;
     padding: 1.5em 9px;

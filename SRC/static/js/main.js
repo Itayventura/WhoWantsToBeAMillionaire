@@ -11,7 +11,7 @@ function start_clock()
         if (time_length == 0)
         {
 	        clearInterval(t)
-            return end_game("Game_over! Time is out!");
+            return end_game("Game over!");
         }
         var str = "";
         str += time_length;
@@ -45,14 +45,16 @@ function handle_response()
         if (dict.correct == "false")
         {
             document.getElementById(current_answer).style.backgroundColor = "red";
-            setTimeout(end_game, 30, "Sorry! Game over!");
-            setTimeout(refresh_question, 300);
+            document.getElementById(current_answer.replace('answer', 'mirror')).style.backgroundColor = "red";
+            document.getElementById(dict.answer.replace('answer', 'mirror')).style.backgroundColor = "green";
+            setTimeout(end_game, 3, "Game over!");
             return;
         }
         document.getElementById(current_answer).style.backgroundColor = "green";
+        document.getElementById(current_answer.replace('answer','mirror')).style.backgroundColor = "green";
         if (dict.win == "true")
         {
-            return end_game("Congradulations! you Won!");
+            return end_game("You Won!");
         }
         setTimeout(refresh_question, 300);
     }
@@ -68,6 +70,11 @@ function refresh_question()
         if (x[i].hasAttribute('style'))
         {
             x[i].removeAttribute("style");
+        }
+        var mirror = document.getElementById(x[i].id.replace('answer', 'mirror'));
+        if (mirror.hasAttribute('style'))
+        {
+            mirror.removeAttribute('style');
         }
     }
     x = document.getElementsByClassName("number");
@@ -87,6 +94,10 @@ function refresh_question()
     document.getElementById("answer_b").innerHTML = "B. " + dict.answer_b;
     document.getElementById("answer_c").innerHTML = "C. " + dict.answer_c;
     document.getElementById("answer_d").innerHTML = "D. " + dict.answer_d;
+    document.getElementById("mirror_a").innerHTML = "A. " + dict.answer_a;
+    document.getElementById("mirror_b").innerHTML = "B. " + dict.answer_b;
+    document.getElementById("mirror_c").innerHTML = "C. " + dict.answer_c;
+    document.getElementById("mirror_d").innerHTML = "D. " + dict.answer_d;
     clicked = false;
 }
 

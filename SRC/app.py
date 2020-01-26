@@ -51,6 +51,7 @@ def index():
         print(session['correct'])
         data['correct'] = 'false'
         data['win'] = 'false'
+        data['answer'] = last_correct
         if last_correct == req_data:
             data['correct'] = 'true'
             session['number'] += 1

@@ -8,6 +8,7 @@ span.message
     background-color: rgb(87, 87, 182);
     box-shadow: none;
     cursor: context-menu;
+    text-align: left;
 }
 .unvisible
 {
