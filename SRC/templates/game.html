@@ -5,16 +5,16 @@
 		<div class="content-container" id="game" style="display:block;">
 		
 		<div id="seperator">
-			<span class="current number" id="1">1,000$</span>
-			<span class="number" id="2">4,000$</span>
-			<span class="number" id = "3">16,000$</span>
-			<span class="number" id="4">64,000$</span>
-			<span class="number" id="5">256,000$</span>
-			<span class="number" id="6">1,000,000$</span>
+			<span class="current-classic number-classic" id="1">1,000$</span>
+			<span class="number-classic" id="2">4,000$</span>
+			<span class="number-classic" id = "3">16,000$</span>
+			<span class="number-classic" id="4">64,000$</span>
+			<span class="number-classic" id="5">256,000$</span>
+			<span class="number-classic" id="6">1,000,000$</span>
 		</div>
         <div class="timer-container">
 			<span id="friend">Friend</span>
-			<span id="timer">30</span>
+			<span class="number-classic" id="timer">30</span>
 			<span id="friend">Crowd</span>
 			
 			<span id="friend">50 : 50</span>
@@ -24,17 +24,19 @@
 		<div class="timer-container">
 		</div>
 		<div id="seperator"></div>
-        <div class="question-container">
+
+        <div class="question-container-classic">
 			<h5 id="question">{{ question }}</h5>
         </div>
 		<div id="seperator"></div>
+
         <div class="game-answers">
-            <span class="answer" id="answer_a" onclick="send_answer('answer_a')">A. {{ answer_a }}</span>
-            <span class="answer" id="answer_b" onclick="send_answer('answer_b')">B. {{ answer_b }}</span>
+            <span class="answer-classic" id="answer_a" onclick="send_answer('answer_a')">A. {{ answer_a }}</span>
+            <span class="answer-classic" id="answer_b" onclick="send_answer('answer_b')">B. {{ answer_b }}</span>
         </div>
         <div class="game-answers">
-			<span class="answer" id="answer_c" onclick="send_answer('answer_c')">C. {{ answer_c }}</span>
-			<span class="answer" id="answer_d" onclick="send_answer('answer_d')">D. {{ answer_d }}</span>
+			<span class="answer-classic" id="answer_c" onclick="send_answer('answer_c')">C. {{ answer_c }}</span>
+			<span class="answer-classic" id="answer_d" onclick="send_answer('answer_d')">D. {{ answer_d }}</span>
         </div>
 		
 		</div>

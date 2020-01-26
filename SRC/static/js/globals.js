@@ -11,9 +11,9 @@ var time_length = 30;
 var current_answer;
 var mode = 'regular';
 
-//level.js
+//level.js, themes.js
 var current_level = 'easy';
-
+var current_theme = 'classic';
 //menu.js
 var menu_on = false;
 var caller = "game";

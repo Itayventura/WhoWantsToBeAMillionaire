@@ -1,4 +1,4 @@
-span.level-item-classic
+span.level-item-test
 {
     display: inline-block;
     padding: 1.5em 9px;
@@ -9,22 +9,14 @@ span.level-item-classic
     box-shadow: none;
     cursor: pointer;
 }
-span.level-item-classic:hover
+span.level-item-test:hover
 {
     box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
     position: relative;
     top: -2px;
 
 }
-span.level-item-classic:active
+span.level-item-test:active
 {
     border: 1px solid grey;
-}
-#easy
-{
-    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
-}
-.topic
-{
-    box-shadow: 0 2px 7px 0 rgb(18, 19, 19);
 }

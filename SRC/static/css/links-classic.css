@@ -1,0 +1,33 @@
+a.classic
+{
+    display: inline-block;
+	width: 20%;
+	padding: 1em 0;
+	text-align: center;
+    cursor: pointer;
+    color: whitesmoke;
+    text-decoration: none;
+}
+a.classic:hover
+{
+    color: gold;
+}
+
+
+a.logo
+{
+	padding: 25px 25px;
+	color: aliceblue;
+	text-align: left;
+	width: auto;
+	
+}
+a.left:hover
+{
+	background-color: white;
+}
+a.left
+{
+    position: absolute;
+	right: 0px;
+}

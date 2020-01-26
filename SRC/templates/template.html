@@ -4,32 +4,26 @@
     <meta charset='utf-8'>
     <title>X-FACT - play!</title>
 
-    <link rel='stylesheet' type='text/css' media='screen' href="{{ url_for('static', filename='css/main.css') }}">
-    <link rel='stylesheet' type='text/css' media='screen' href="{{ url_for('static', filename='css/links.css') }}">
-    <link rel='stylesheet' type='text/css' media='screen' href="{{ url_for('static', filename='css/misc.css') }}">
-    
-    <link rel='stylesheet' type='text/css' media='screen' href="{{ url_for('static', filename='css/messages.css') }}">
-    <link rel='stylesheet' type='text/css' media='screen' href="{{ url_for('static', filename='css/menu-classic.css') }}">
-    <link rel='stylesheet' type='text/css' media='screen' href="{{ url_for('static', filename='css/level-classic.css') }}">
-    <link rel='stylesheet' type='text/css' media='screen' href="{{ url_for('static', filename='css/instructions-classic.css') }}">
+    {% include "css.html" %}
     
     <script src="{{ url_for('static', filename='js/globals.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/level.js') }}"></script>
     <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/themes.js') }}"></script>
     <script src="{{ url_for('static', filename='js/topic.js') }}" onload="set_urls('{{ url_for("index")}}', '{{ url_for('level')}}', '{{url_for('topics')}}', '{{url_for('new_game')}}')"></script>
 
 
 </head>
-<body>
+<body class="classic">
     <div></div>
-    <div class="game-container">
+    <div class="game-container-classic">
         
-        <div class="game-header">
-            <a class="logo" href="{{ url_for('index')}}">
-                <span class="x-fact">The <strong>X-FACT</strong></span></a>
-            <a class="logo left" onclick="toggle_menu()">
-                <span class="x-fact"><strong>MENU</strong></span></a>
+        <div class="game-header-classic">
+            <a class="classic logo" href="{{ url_for('index')}}">
+                <span class="x-fact-classic">The <strong>X-FACT</strong></span></a>
+            <a class="classic logo left" onclick="toggle_menu()">
+                <span class="x-fact-classic"><strong>MENU</strong></span></a>
         </div>
 		
         {% include "game.html" %}

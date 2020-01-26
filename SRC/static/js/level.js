@@ -17,10 +17,10 @@ function choose_level(new_level)
 		document.getElementById("medium").style.boxShadow = "0 2px 7px 0 rgb(18, 19, 19)";
 		document.getElementById("hard").style.boxShadow = "0 2px 7px 0 rgb(18, 19, 19)";
 	}
-	level = new_level;
+	current_level = new_level;
 	var xhttp = new XMLHttpRequest();
 	xhttp.open('POST', level_url);
-	xhttp.send(level);
+	xhttp.send(current_level);
 }
 
 	function set_hover()
@@ -29,7 +29,7 @@ function choose_level(new_level)
 	}
 	function unset_hover()
 	{
-		if (level == "easy")
+		if (current_level == "easy")
 		{
 			document.getElementById('medium').removeAttribute("style");
 		}

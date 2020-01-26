@@ -63,7 +63,8 @@ function handle_response()
 function refresh_question()
 {
     time_length = 30;
-    var x = document.getElementsByClassName("answer");
+    c = "answer"+"-"+current_theme;
+    var x = document.getElementsByClassName(c);
     var i;
     for (i = 0; i < x.length; i++)
     {
@@ -77,7 +78,7 @@ function refresh_question()
             mirror.removeAttribute('style');
         }
     }
-    x = document.getElementsByClassName("number");
+    x = document.getElementsByClassName("number"+"-"+current_theme);
     for (i = 0; i < x.length; i++)
     {
         if (x[i].id > dict.number)

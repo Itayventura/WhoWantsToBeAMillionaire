@@ -10,7 +10,7 @@ db = Database()
 
 topic_sets = {'artist':{1,2,4,5,7, 11, 12}, 'albums':{1,2,8}, 'genres':{4}, 'movies':{3,5,9,10}, 'songs':{1,4,6,9,11,13}}
 
-def generate_question(options_set):
+def generate_question():
     """ This function chooses a random question and calls the method that generates the question's data.
     :return: The question's data.
     """
@@ -28,10 +28,18 @@ def generate_question(options_set):
                       track_of_specific_artist,
                       year_of_birth_of_specific_artist,
                       song_that_contains_a_word]
-    #random.shuffle(questions_list)
+    
+    if 'topics' not in session:
+        for i in range(14):
+            session['q_' + str(i)] = True
+        session['topics'] = True
+
+    options_set = []
+    for i, q in enumerate(questions_list):
+        if session['q_' + str(i)]:
+            options_set.append(i)
     question = questions_list[random.sample(options_set, 1)[0]]
     data, session['correct'] = question()
-    #return questions_list[0]()
     return data
 
 ###############
@@ -44,15 +52,20 @@ def index():
         session['number'] = 1
         session['question_number'] = 1
         session['target'] = 2
-        session['topics'] = list(range(14))
-        data = generate_question(session['topics'])
+        if 'theme' not in session:
+            session['theme'] = 'classic'
+        
+        data = generate_question()
+        data['theme'] = session['theme']
+        data['target'] = session['target']
+        data['number'] = session['number']
         print(session['correct'])
         return render_template('template.html', **data)
     else:
         req_data = request.get_data().decode('utf-8')
         last_correct = session['correct']
         session['question_number'] += 1
-        data = generate_question(session['topics'])
+        data = generate_question()
         print(session['correct'])
         data['correct'] = 'false'
         data['win'] = 'false'
@@ -69,7 +82,7 @@ def index():
 @app.route('/new_game', methods=['POST'])
 def new_game():
     session['number'] = 1
-    data = generate_question(session['topics'])
+    data = generate_question()
     data['number'] = session['number']
     print(session['correct'])
     return jsonify(**data)
@@ -89,18 +102,19 @@ def level():
 @app.route('/topics', methods=['POST'])
 def topics():
     req_data = request.get_data().decode('utf-8')
-    for topic, options in topic_sets.items():
-        if req_data.find(topic) > -1:
-            for item in options:
-                if req_data.find('add') > -1 and item not in session['topics']:
-                    session['topics'].append(item)
-                elif req_data.find('remove') > -1 and item in session['topics']:
-                    session['topics'].remove(item)
-            return jsonify()
+    d = req_data.split(' ')
+    for i in topic_sets[d[0]]:
+        if d[1] == 'add':
+            session['q_' + str(i)] = True
+        else:
+            session['q_' + str(i)] = False
     return jsonify()
 
 @app.route('/theme', methods=['POST'])
 def theme():
+    req_data = request.get_data().decode('utf-8')
+    if req_data in ['classic', 'simple', 'retro', 'dark', 'bright', 'Q']:
+        session['theme'] = req_data
     return jsonify()
 
 #############
