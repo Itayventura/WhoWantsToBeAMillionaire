@@ -50,7 +50,7 @@ FOREIGN KEY (genre_id) REFERENCES Genres(genre_id)
 CREATE TABLE AlbumTracks (
 track_id INT UNSIGNED,
 album_id INT UNSIGNED,
-PRIMARY KEY (track_id),
+PRIMARY KEY (track_id, album_id),
 FOREIGN KEY (track_id) REFERENCES Tracks(track_id),
 FOREIGN KEY (album_id) REFERENCES Albums(album_id)
 );
