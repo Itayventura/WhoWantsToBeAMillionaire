@@ -332,5 +332,5 @@ def song_that_contains_a_word():
 
 
 if __name__ == "__main__":
-    app.run(port=service_port, host="0.0.0.0", debug=True)
+    app.run(port=service_port, host="0.0.0.0", debug=False)
 
