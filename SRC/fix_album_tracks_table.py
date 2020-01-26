@@ -82,7 +82,7 @@ def add_album_tracks(album_id, added_tracks):
 
 artists = database.get_artists()
 
-for i in range(0, 281):  # Artists table length is 281
+for i in range(228, 281):  # Artists table length is 281
     # dan - replace to (0, 100)
     # adi - replace to (100, 200)
     # itay - replace to (200, 281)
