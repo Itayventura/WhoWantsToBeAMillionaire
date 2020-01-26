@@ -236,6 +236,6 @@ class Database:
         return [record[0] for record in data]
 
     def get_artists(self):
-        self.cursor.execute('SELECT artist_id from Artists')
+        self.cursor.execute('SELECT artist_id from Artists ORDER BY artist_id')
         data = self.cursor.fetchall()
         return [record[0] for record in data]
