@@ -2,20 +2,22 @@
 
 function choose_topic(el_id)
 {
+    var message = el_id + " ";
     if (document.getElementById(el_id).hasAttribute('style'))
     {
         document.getElementById(el_id).removeAttribute('style');
+        message = message + "add";
     }
     else
     {
         document.getElementById(el_id).style.boxShadow = "none";
         document.getElementById(el_id).style.backgroundColor = "rgb(107, 107, 192)";
+        message = message + "remove";
     }
     
 	var xhttp = new XMLHttpRequest();
 	xhttp.open('POST', topics_url);
-    xhttp.send(el_id + " " + "remove");
-    xhttp.send(el_id + " " + "add");
+    xhttp.send(message);
 }
 function reset_topic()
 {
