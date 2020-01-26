@@ -226,3 +226,16 @@ class Database:
             data = self.cursor.fetchall()
         # return: correct_answer, [wrong_answers], word
         return data[0][0], [data[i][0] for i in range(1, len(data))], word
+
+    def get_artist_albums(self, artist_id):
+        query = """
+        SELECT album_id from Albums where artist_id = '%s'
+        """
+        self.cursor.execute(query % artist_id)
+        data = self.cursor.fetchall()
+        return [record[0] for record in data]
+
+    def get_artists(self):
+        self.cursor.execute('SELECT artist_id from Artists')
+        data = self.cursor.fetchall()
+        return [record[0] for record in data]
