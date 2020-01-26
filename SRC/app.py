@@ -51,7 +51,9 @@ def index():
     if request.method == 'GET':
         session['number'] = 1
         session['question_number'] = 1
-        session['target'] = 2
+        session['target'] = 6
+        session['mistakes'] = 0
+        session['max_mistakes'] = 3
         if 'theme' not in session:
             session['theme'] = 'classic'
         
@@ -62,6 +64,11 @@ def index():
         print(session['correct'])
         return render_template('template.html', **data)
     else:
+
+        if session['mistakes'] >= session['max_mistakes']:
+            data['lives'] = 0
+            return jsonify(**data)
+
         req_data = request.get_data().decode('utf-8')
         last_correct = session['correct']
         session['question_number'] += 1
@@ -69,6 +76,7 @@ def index():
         print(session['correct'])
         data['correct'] = 'false'
         data['win'] = 'false'
+        data['lives'] = session['max_mistakes'] - session['mistakes']
         data['answer'] = last_correct
         if last_correct == req_data:
             data['correct'] = 'true'
@@ -77,13 +85,19 @@ def index():
                 data['win'] = 'true'
             data['number'] = session['number']
             return jsonify(**data)
+        else:
+            data['number'] = session['number']
+            session['mistakes'] += 1
+            data['lives'] -= 1
         return jsonify(**data)
 
 @app.route('/new_game', methods=['POST'])
 def new_game():
     session['number'] = 1
+    session['mistakes'] = 0
     data = generate_question()
     data['number'] = session['number']
+    data['lives'] =session['max_mistakes']
     print(session['correct'])
     return jsonify(**data)
 
@@ -92,11 +106,11 @@ def level():
     l = request.get_data().decode('utf-8')
     session['level'] = l
     if l == 'easy':
-        session['target'] = 2
+        session['max_mistakes'] = 3
     if l == 'medium':
-        session['target'] = 4
+        session['max_mistakes'] = 2
     if l == 'hard':
-        session['target'] = 6
+        session['max_mistakes'] = 1
     return jsonify()
 
 @app.route('/topics', methods=['POST'])

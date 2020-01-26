@@ -42,16 +42,32 @@ function handle_response()
     if (this.readyState == 4 && this.status == 200)
     {
         dict = JSON.parse(this.responseText);
+        document.getElementById(dict.answer).style.backgroundColor = "green";
         if (dict.correct == "false")
         {
+            var act1 = document.getElementById('answer_a').removeAttribute("onclick");
+            var act2 = document.getElementById('answer_b').removeAttribute("onclick");
+            var act3 = document.getElementById('answer_c').removeAttribute("onclick");
+            var act4 = document.getElementById('answer_d').removeAttribute("onclick");
+
+            document.getElementById('answer_a').style.boxShadow = 'none';
+            document.getElementById('answer_b').style.boxShadow = 'none';
+            document.getElementById('answer_c').style.boxShadow = 'none';
+            document.getElementById('answer_d').style.boxShadow = 'none';
+            
             document.getElementById(current_answer).style.backgroundColor = "red";
             document.getElementById(current_answer.replace('answer', 'mirror')).style.backgroundColor = "red";
             document.getElementById(dict.answer.replace('answer', 'mirror')).style.backgroundColor = "green";
-            setTimeout(end_game, 3, "Game over!");
-            return;
+
+            document.getElementById('lives').innerHTML = '<strong>'+dict.lives+'</strong>';
+            if (dict.lives  == '0')
+            {
+                setTimeout(end_game, 3, "Game over!");
+                return;
+            }
         }
-        document.getElementById(current_answer).style.backgroundColor = "green";
-        document.getElementById(current_answer.replace('answer','mirror')).style.backgroundColor = "green";
+
+        document.getElementById(dict.answer.replace('answer','mirror')).style.backgroundColor = "green";
         if (dict.win == "true")
         {
             return end_game("You Won!");
@@ -81,7 +97,7 @@ function refresh_question()
     x = document.getElementsByClassName("number"+"-"+current_theme);
     for (i = 0; i < x.length; i++)
     {
-        if (x[i].id > dict.number)
+        if (x[i].id > dict.number || x[i].id == 'timer' || x[i].id == 'lives')
         {
             x[i].style.backgroundColor = 'brown';
         }
@@ -99,6 +115,12 @@ function refresh_question()
     document.getElementById("mirror_b").innerHTML = "B. " + dict.answer_b;
     document.getElementById("mirror_c").innerHTML = "C. " + dict.answer_c;
     document.getElementById("mirror_d").innerHTML = "D. " + dict.answer_d;
+
+    document.getElementById("answer_a").setAttribute('onclick', 'send_answer("answer_a")');
+    document.getElementById("answer_b").setAttribute('onclick', 'send_answer("answer_b")');
+    document.getElementById("answer_c").setAttribute('onclick', 'send_answer("answer_c")');
+    document.getElementById("answer_d").setAttribute('onclick', 'send_answer("answer_d")');
+
     clicked = false;
 }
 

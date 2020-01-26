@@ -48,6 +48,12 @@ span.answer-classic:active
     position: relative;
     float: right;
 }
+#lives
+{
+    position: relative;
+    float: left;
+}
+
 #friend
 {
 	display: none;

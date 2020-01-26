@@ -54,7 +54,8 @@ function handle_new()
 {
     if (this.readyState == 4 && this.status == 200)
     {
-        dict = JSON.parse(this.responseText);
+		dict = JSON.parse(this.responseText);
+		document.getElementById('lives').innerHTML = '<strong>'+dict.lives+'</strong>';
 	//in main.js
         setTimeout(refresh_question, 3);
     }
