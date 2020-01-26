@@ -1,10 +1,7 @@
 import requests
-import hashlib
 import json
 import re
-from bs4 import BeautifulSoup
 from database import Database
-from datetime import datetime
 from constants import *
 
 database = Database()
@@ -90,6 +87,6 @@ for i in range(0, 281):  # Artists table length is 281
     # adi - replace to (100, 200)
     # itay - replace to (200, 281)
     _added_tracks = {'': ''}
-    albums = database.get_albums(artists[i])
+    albums = database.get_artist_albums(artists[i])
     for al_id in albums:
         add_album_tracks(al_id, _added_tracks)
